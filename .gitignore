@@ -1,5 +1,12 @@
 #Ignore binary files
 bin/
+!lib/*/bin
+
+#Ignore Visual Studio Code requirements 
+.vscode/
+
+#Ignore files meant to learn libraries
+learning/
 
 #Ignore input and output files
 *.csv
