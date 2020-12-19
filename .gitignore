@@ -1,4 +1,6 @@
+#Ignore binary files
 bin/
 
+#Ignore input and output files
 *.csv
 *.xlsx
