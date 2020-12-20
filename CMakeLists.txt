@@ -9,11 +9,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS -std=c++2a)
 
 #Include directory
-include_directories(src/include)
+include_directories(src/include lib)
 
 #Set sources 
-set(SOURCES src/basic_types.cpp test/compile_check.cpp)
-#file(GLOB SOURCES src/*.cpp)
+file(GLOB SOURCES "src/*.cpp" test/compile_check.cpp)
 
 add_executable(Test ${SOURCES})
 
