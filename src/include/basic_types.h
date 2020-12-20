@@ -11,6 +11,10 @@
 //Type to represent date and time
 struct date_time_t
 {
+    //Creates a new date_time_t from formatted date and time strings 
+    //@param date the formatted date string 
+    //@param time the formatted time string
+    static date_time_t make_date_time(const std::string& date, const std::string& time);
     //Date in year-month-day format
     std::tuple<int,short,short> _M_date;
     //Time in hour-min-second dformat
@@ -20,7 +24,6 @@ struct date_time_t
     operator std::string() const;
 };
 
-std::ostream& operator<<(std::ostream& os, const date_time_t& dt);
 bool operator<(const date_time_t& lhs, const date_time_t& rhs);
 
 //Types to represent a donation's amount

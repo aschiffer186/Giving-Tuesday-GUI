@@ -1,6 +1,68 @@
 #include "basic_types.h"
 #include <string>
 
+date_time_t date_time_t::make_date_time(const std::string& date, const std::string& time)
+{
+    short hour = static_cast<short>(std::stoi(time.substr(0, time.find(":"))));
+    short min = static_cast<short>(std::stoi(time.substr(time.find(":") + 1, time.find(":") + 3)));
+    short sec = static_cast<short>(std::stoi(time.substr(time.length() - 2)));
+
+    auto donation_time = std::make_tuple(hour, min, sec);
+
+    short month = static_cast<short>(std::stoi(time.substr(0, 2)));
+    short day = static_cast<short>(std::stoi(time.substr(3, 5)));
+    int year = std::stoi(time.substr(7));
+    auto donation_date = std::make_tuple(hour, min, sec);
+
+    return {donation_time, donation_date};
+}
+
+bool operator<(const date_time_t& lhs, const date_time_t& rhs)
+{
+    auto lhs_date = lhs._M_date;
+    auto rhs_date = rhs._M_date;
+    //Check if dates are different
+    if (std::get<0>(lhs_date) < std::get<0>(rhs_date)) 
+        return true;
+    if (std::get<1>(lhs_date) < std::get<1>(rhs_date))
+        return true;
+    if(std::get<2>(lhs_date) < std::get<2>(rhs_date))
+        return true;
+    //Date is same, compare times 
+    auto lhs_time = lhs._M_time;
+    auto rhs_time = rhs._M_time;
+
+    if(std::get<0>(lhs_time) < std::get<0>(rhs_time))
+        return true;
+    if (std::get<1>(lhs_time) < std::get<1>(rhs_time))
+        return true;
+    return std::get<2>(lhs_time) < std::get<2>(rhs_time);
+}
+
+date_time_t::operator std::string() const 
+{
+    short hour = std::get<0>(_M_time);
+    short min = std::get<1>(_M_time);
+    short sec = std::get<2>(_M_time);
+
+    int year = std::get<0>(_M_date);
+    short month = std::get<1>(_M_date);
+    short day = std::get<2>(_M_date);
+
+    std::string year_string = std::to_string(year);
+    std::string month_string = (month < 10) ? "0" + std::to_string(month) : std::to_string(month);
+    std::string day_string = (day < 10) ? "0" + std::to_string(day) : std::to_string(day);
+
+    std::string hour_string = (hour == 0) ? "00" : std::to_string(hour);
+    std::string min_string = (min == 0) ? "00" : std::to_string(min);
+    std::string sec_string = (sec == 0) ? "00" : std::to_string(sec);
+    //Output information
+    return year_string + "/" + month_string + "/" + day_string + " " + 
+        hour_string + ":" + min_string + ":" + sec_string + ", ";
+}
+
+
+
 std::ostream& operator<<(std::ostream& os, const donation_val_t& d)
 {
     std::string cents_string;
@@ -88,26 +150,8 @@ donation_val_t make_donation(int dollar, int cents)
 std::ostream& operator<<(std::ostream& os, const donation_t& d)
 {
     os << "{";
-    //Make timestamp
-    date_time_t dt = d._M_timestamp;
-    short hour = std::get<0>(dt._M_time);
-    short min = std::get<1>(dt._M_time);
-    short sec = std::get<2>(dt._M_time);
-
-    int year = std::get<0>(dt._M_date);
-    short month = std::get<1>(dt._M_date);
-    short day = std::get<2>(dt._M_date);
-
-    std::string year_string = std::to_string(year);
-    std::string month_string = (month < 10) ? "0" + std::to_string(month) : std::to_string(month);
-    std::string day_string = (day < 10) ? "0" + std::to_string(day) : std::to_string(day);
-
-    std::string hour_string = (hour == 0) ? "00" : std::to_string(hour);
-    std::string min_string = (min == 0) ? "00" : std::to_string(min);
-    std::string sec_string = (sec == 0) ? "00" : std::to_string(sec);
     //Output information
-    os << "Timestamp: " << year_string << "/" << month_string << "/" << day_string <<
-        hour_string << ":" << min_string << ":" << sec_string << ", ";
+    os << "Timestamp: " << static_cast<std::string>(d._M_timestamp);
     os << "Amount: " << (d._M_amt) << ", ";
     os << "Donor Name: " << d._M_donor_first_name << " " << d._M_donor_last_name << ", ";
     os << "Donor Email: "<< d._M_donor_email << ", ";
