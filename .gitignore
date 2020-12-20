@@ -2,6 +2,9 @@
 bin/
 !lib/*/bin
 
+#Just for now
+build/
+
 #Ignore Visual Studio Code requirements 
 .vscode/
 

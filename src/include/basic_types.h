@@ -4,7 +4,6 @@
 #include <tuple>
 #include <ostream>
 #include <type_traits>
-#include <concepts>
 #include <cmath>
 #include <string>
 
@@ -35,7 +34,7 @@ static const donation_val_t ZERO = std::make_pair(0,0);;
 donation_val_t operator+(const donation_val_t& lhs, const donation_val_t& rhs);
 donation_val_t operator-(const donation_val_t& lhs, const donation_val_t& rhs);
 
-template<typename _DTp> requires std::integral<_DTp>
+template<typename _DTp>
 inline donation_val_t operator/(const donation_val_t& lhs, _DTp& rhs)
 {
     double dollars = lhs.first;
