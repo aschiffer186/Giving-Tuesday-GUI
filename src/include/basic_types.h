@@ -12,7 +12,7 @@
 struct date_time_t
 {
     //Date in year-month-day format
-    std::tuple<short,short,short> _M_date;
+    std::tuple<int,short,short> _M_date;
     //Time in hour-min-second dformat
     std::tuple<short,short,short> _M_time;
     //Implicitly covert date_time sto std::string 
@@ -25,6 +25,9 @@ bool operator<(const date_time_t& lhs, const date_time_t& rhs);
 
 //Types to represent a donation's amount
 using donation_val_t = std::pair<int, int>;
+
+//Constant to represent $0.00
+static const donation_val_t ZERO = std::make_pair(0,0);;
 
 donation_val_t operator+(const donation_val_t& lhs, const donation_val_t& rhs);
 donation_val_t operator-(const donation_val_t& lhs, const donation_val_t& rhs);
@@ -48,6 +51,9 @@ bool operator<=(const donation_val_t& lhs, const donation_val_t& rhs);
 bool operator>(const donation_val_t& lhs, const donation_val_t& rhs);
 bool operator>=(const donation_val_t& lhs, const donation_val_t& rhs);
 bool operator==(const donation_val_t& lhs, const donation_val_t& rhs);
+
+donation_val_t make_donation(const std::string& donation);
+donation_val_t make_donation(int dollar, int cents);
 
 //A struct to represent a single donation 
 //Includes information about
@@ -120,6 +126,8 @@ struct donation_t
     std::string _M_dancer_id;
 };
 
+std::ostream& operator<<(std::ostream& os, const donation_t& d);
+
 //Struct to represent information about a donor 
 //Includes information about 
 //  1) the donor's name 
@@ -148,21 +156,21 @@ struct donor_t
         const std::string& relation);
     
     //The donor's name
-    std::string __m_donor_first_name;
+    std::string _M_donor_first_name;
     //The donor's last name
-    std::string __m_donor_last_name;
+    std::string _M_donor_last_name;
     //The donor's email
-    std::string __m_donor_email;
+    std::string _M_donor_email;
     //The donor's phone 
-    std::string __m_donor_phone;
+    std::string _M_donor_phone;
     //The last 4 digits of the donor's card
-    std::string __m_donor_card;
+    std::string _M_donor_card;
     //The donor's relation 
-    std::string __m_donor_relation;
+    std::string _M_donor_relation;
     //The dotal amount the donor donated
-    donation_val_t __m_donation_amt;
+    donation_val_t _M_donation_amt;
     //The total amount the donor was matched
-    donation_val_t __m_matched_amt;
+    donation_val_t _M_matched_amt;
     //List of dancers donated_to
 };
 
@@ -195,21 +203,21 @@ struct dancer_t
         );
     
     //The dancer's peer id
-    std::string __m_dancer_id;
+    std::string _M_dancer_id;
     //The dancer's name
-    std::string __m_dancer_name;
+    std::string _M_dancer_name;
     //The dancer's email
-    std::string __m_dancer_email;
+    std::string _M_dancer_email;
     //The dancer's role in DMUM
-    std::string __m_dancer_role;
+    std::string _M_dancer_role;
     //The dancer's house
-    std::string __m_dancer_house;
+    std::string _M_dancer_house;
     //The dancer's team/associate team
-    std::string __m_dancer_team;
+    std::string _M_dancer_team;
     //The amount the dancer raised
-    donation_val_t __m_amt_raised;
+    donation_val_t _M_amt_raised;
     //The amount the dancer was matched
-    donation_val_t __m_amt_matched;
+    donation_val_t _M_amt_matched;
 };
 
 
