@@ -72,7 +72,9 @@ struct donation_t
     //@param dancer_name the recipient's name 
     //@param dancer_email the recipient's email
     //@param dancer_house the receipient's house 
-    //@param 
+    //@param dancer_team the dancer's team 
+    //@param dancer_type the dancer's role in DMUM 
+    //                   (dancer, steering, CPT, etc.)
    donation_t(const date_time_t& timestamp,
             const donation_val_t& amt, 
             const std::string& donor_first_name, 
@@ -85,7 +87,7 @@ struct donation_t
             const std::string& dancer_email,
             const std::string& dancer_house,
             const std::string& dancer_team,
-            const std::string& dancer_type,
+            const std::string& dancer_role,
             const std::string& dancer_id);
 
     //The donation timestamp
@@ -113,9 +115,102 @@ struct donation_t
     //The dancer's team
     std::string _M_dancer_team;
     //The dancer's type
-    std::string _M_dancer_type;
+    std::string _M_dancer_role;
     //The associated peer id 
     std::string _M_dancer_id;
 };
+
+//Struct to represent information about a donor 
+//Includes information about 
+//  1) the donor's name 
+//  2) the donor's contact information
+//  3) the donor's relationship to DMUM 
+//  4) the amount the donor has donated
+//  5) the amount the donor was matched
+// 
+// Two donors are considred the same if they share 
+//  1) emails
+//  2) phones 
+//  3) the last 4 digits of their card and a last name 
+struct donor_t
+{
+    //Creates a new donor_t.
+    //@param first_name the donor's first name 
+    //@param last_name the donor's last name
+    //@param email the donor's email 
+    //@param card the last 4 digits of the card the donor used 
+    //@param relation the donor's relationship to DMUM 
+     donor_t(const std::string& first_name,
+        const std::string& last_name,
+        const std::string& email,
+        const std::string& phone, 
+        const std::string& card,
+        const std::string& relation);
+    
+    //The donor's name
+    std::string __m_donor_first_name;
+    //The donor's last name
+    std::string __m_donor_last_name;
+    //The donor's email
+    std::string __m_donor_email;
+    //The donor's phone 
+    std::string __m_donor_phone;
+    //The last 4 digits of the donor's card
+    std::string __m_donor_card;
+    //The donor's relation 
+    std::string __m_donor_relation;
+    //The dotal amount the donor donated
+    donation_val_t __m_donation_amt;
+    //The total amount the donor was matched
+    donation_val_t __m_matched_amt;
+    //List of dancers donated_to
+};
+
+bool operator==(const donor_t& lhs, const donor_t& rhs);
+
+bool operator!=(const donor_t& lhs, const donor_t& rhs);
+
+//A struct to represent a dancer. For this purpose 
+//dancer refers to anyone in DMUM including leadership.
+//Contains information about 
+//  1) A unique key for a dancer 
+//  2) The dancer's name 
+//  3) The dancer's email 
+//  4) The dancer's role in DMUM 
+//  5) Dancer placement info
+struct dancer_t
+{
+    //Creates a new dancer_t
+    //@param dancer_id a unique key for the dancer
+    //@param name the dancer's full name 
+    //@param role the dancer's role in DMUM 
+    //@param house the dancer's house 
+    //@param team the dancer's team
+    dancer_t(const std::string& dancer_id,
+        const std::string& name,
+        const std::string& email,
+        const std::string& role,
+        const std::string& house, 
+        const std::string& team
+        );
+    
+    //The dancer's peer id
+    std::string __m_dancer_id;
+    //The dancer's name
+    std::string __m_dancer_name;
+    //The dancer's email
+    std::string __m_dancer_email;
+    //The dancer's role in DMUM
+    std::string __m_dancer_role;
+    //The dancer's house
+    std::string __m_dancer_house;
+    //The dancer's team/associate team
+    std::string __m_dancer_team;
+    //The amount the dancer raised
+    donation_val_t __m_amt_raised;
+    //The amount the dancer was matched
+    donation_val_t __m_amt_matched;
+};
+
 
 #endif
