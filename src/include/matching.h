@@ -25,18 +25,43 @@ namespace GTD
     #define DANCER_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, double, size_t, double>
    //Hourly fundraising, mean donation size, median donation size, num donors, num unique donors, number of alumni donors, 
    //number of unique alumni donors
-    #define HOURLY_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, int, int, int, init>
+    #define HOURLY_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, int, int, int, int>
 
     class matcher
     {
         public:
-            matcher(const std::vector<donation_t>& donation_list, 
-            const std::vector<matching_criterion_t>& matching_rounds,
-            const std::vector<std::pair<date_time_t, date_time_t>>& matching_round_times);
+        matcher(const std::vector<donation_t>& donation_list, 
+        const std::vector<matching_criterion_t>& matching_rounds,
+        const std::vector<std::pair<date_time_t, date_time_t>>& matching_round_times);
 
-            matcher(std::vector<donation_t>&& donation_list, 
-            std::vector<matching_criterion_t>&& matching_rounds,
-            std::vector<std::pair<date_time_t, date_time_t>>&& matching_round_times);
+        matcher(std::vector<donation_t>&& donation_list, 
+        std::vector<matching_criterion_t>&& matching_rounds,
+        std::vector<std::pair<date_time_t, date_time_t>>&& matching_round_times);
+
+        //Calculates how much each dancer will be matched as well as 
+        //all requested statistics about Giving Tuesday
+        void perform_matching_calculations();
+        //Returns the amount each dancer was matched
+        //@return the amount each dancer was matched
+        const std::unordered_map<std::string, dancer_t>& get_matching_information() const;
+        //Returns fundraising breakdown by dancer type (e.g. assorted vs fslr vs steering etc.)
+        //@return fundraising breakdown by dancer type
+        const std::unordered_map<std::string, DANCER_STATISTICS_ROW>& get_dancer_statistics() const;
+        //Returns statistics broken down by hour 
+        //@return fundraising statistics broken down by hour
+        const std::unordered_map<date_time_t, HOURLY_STATISTICS_ROW>& get_hourly_statistics() const;
+        //Returns the list of donors
+        //@return list of donors
+        const std::vector<donor_t>& get_donor_information() const;
+        //Returns list of alumni donors
+        //@return list of alumni donors
+        const std::vector<donor_t>& get_alumni_donor_information() const;
+        //Return the amount of general matching money unused.
+        //@return amount of matching money unused. Each element is the amount of money unused for that round
+        std::vector<std::pair<date_time_t, donation_val_t>> get_general_matching_money_left() const;
+        //Return the amount of matching money reserved for dancers.
+        //@return amount of matching money unused. Entry element is the amount unused for that round 
+        std::vector<std::pair<date_time_t, donation_val_t>> get_dancer_matching_money_left() const;
         private: //Helper functions 
         //Calculates the amount that the dancer should be matched and subtracts from 
         //the appropriate matching pool. 
@@ -68,9 +93,7 @@ namespace GTD
         //Updates the dancer statistics information with the dancers new fundraising total
         //@param dancer the dancer whose total will be used to update the fundraising statistics
         void update_dancer_statistics(const dancer_t& dancer, const donation_val_t& d);
-        
-        void update_dancer_statistics_row(dancer_t dancer, const donation_val_t& d, DANCER_STATISTICS_ROW& row);
-        DANCER_STATISTICS_ROW make_dancer_statistics_row(const dancer_t& dancer, const donation_val_t& donation);
+        //Will most likely needed functions to "build" dancer statistics and hourly statistics outputs
         private:
             static const matching_criterion_t NO_MATCHING;
         private:
@@ -82,11 +105,15 @@ namespace GTD
             donation_val_t _M_curr_general_matching_amt;
             donation_val_t _M_curr_dancer_matching_amt;
             //Statistic keeping information 
-            std::vector<donor_t> _M_donors;
-            std::vector<donor_t> _M_alumni;
             std::vector<std::vector<std::unordered_set<std::string>>> _M_alumni_donations;
             std::unordered_map<std::string, std::unordered_set<dancer_t>> _M_dancer_types;
-            std::unordered_map<date_time_t, std::vector<donation_t>> _M_donations_per_hour;
+            //Outputs 
+            std::unordered_map<std::string, dancer_t> _M_matching_info;
+            std::vector<donor_t> _M_donors;
+            std::vector<donor_t> _M_alumni;
+            std::unordered_map<date_time_t, HOURLY_STATISTICS_ROW> _M_hour_statistics;
+            std::unordered_map<std::string, DANCER_STATISTICS_ROW> _M_dancer_statistics;
+
 
     };
 
