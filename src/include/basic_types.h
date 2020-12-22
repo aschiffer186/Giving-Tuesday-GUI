@@ -234,6 +234,8 @@ namespace GTD {
         //List of donors
         std::vector<std::pair<donor_t, donation_val_t>> _M_donors;
     };
+
+    bool operator<(const dancer_t& lhs, const dancer_t& rhs);
 }
 
  namespace std

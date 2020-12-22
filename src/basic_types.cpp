@@ -285,4 +285,9 @@ namespace GTD {
             {
 
             }
+    
+    bool operator<(const dancer_t& lhs, const dancer_t& rhs)
+    {
+        return lhs._M_dancer_id < rhs._M_dancer_id;
+    }
 }

@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <array>
+#include <set>
 #include "basic_types.h"
 
 namespace GTD 
@@ -124,8 +125,9 @@ namespace GTD
             donation_val_t _M_curr_dancer_matching_amt;
             //Statistic keeping information 
             donation_val_t _M_total_raised;
-            std::vector<std::array<std::unordered_set<std::string>, 3>> _M_alumni_donations;
-            std::unordered_map<std::string, std::unordered_set<dancer_t>> _M_dancer_types;
+            std::vector<std::unordered_map<std::string, std::unordered_set<std::string>>> _M_alumni_donations;
+            std::unordered_map<std::string, std::set<donation_val_t>> _M_donations_by_type;
+            std::unordered_map<std::string, std::set<dancer_t>> _M_dancers_by_type;
             std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_general;
             std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_dancer;
             //Outputs 
