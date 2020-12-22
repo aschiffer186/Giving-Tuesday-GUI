@@ -155,7 +155,50 @@ namespace GTD
             //Update statistics 
             //Dancer mathing information for Finance 
             _M_matching_info[dancer._M_dancer_id] = dancer;
+            //Update donor statistics
+            auto donor_it = std::find(_M_donors.begin(), _M_donors.end(), donor);
+            if (donor_it == _M_donors.end())
+            {
+                _M_donors.push_back(donor);
+            } 
+            else 
+            {
+                donor_t& d = *donor_it;
+                d._M_donation_amt = d._M_donation_amt + donation._M_amt;
+                d._M_matched_amt = d._M_matched_amt + matched_amt;
             }
+            //Update alumni info
+            if(donor._M_donor_relation.find("DMUM Alumni") != std::string::npos)
+            {
+                auto alumnus_it = std::find(_M_alumni.begin(), _M_alumni.end(), donor);
+                if (alumnus_it == _M_alumni.end())
+                {
+                    std::unordered_map<std::string, std::unordered_set<std::string>> donation_types;
+                    if (dancer._M_dancer_role == "DMUM")
+                        donation_types["DMUM"].insert(dancer._M_dancer_id);
+                    else if (dancer._M_dancer_role == "Dancer")
+                        donation_types["Dancer"].insert(dancer._M_dancer_id);
+                    else
+                        donation_types["Leadership"].insert(dancer._M_dancer_id);
+                    _M_alumni.push_back(donor);
+                    _M_alumni_donations.push_back(donation_types);
+                } 
+                else 
+                {
+                    donor_t& d = *alumnus_it;
+                    d._M_donation_amt = d._M_donation_amt + donation._M_amt;
+                    d._M_matched_amt = d._M_matched_amt + matched_amt;
+                    size_t index = static_cast<size_t>(alumnus_it - _M_alumni.begin());
+                    auto& donation_types = _M_alumni_donations[index];
+                    if (dancer._M_dancer_role == "DMUM")
+                        donation_types["DMUM"].insert(dancer._M_dancer_id);
+                    else if (dancer._M_dancer_role == "Dancer")
+                       donation_types["Dancer"].insert(dancer._M_dancer_id);
+                    else
+                       donation_types["Leadership"].insert(dancer._M_dancer_id);
+                }
+            }
+        }
         //Build statistics
     }
 
@@ -269,6 +312,19 @@ namespace GTD
             [&](const std::pair<donor_t, donation_val_t>& lhs) {return lhs.first == donor;});
         if (it == dancer._M_donors.end()) return ZERO;
         return it->second;
+    }
+
+    void matcher::update_donation_info(dancer_t& dancer, const donor_t& donor, donation_val_t amt)
+    {
+        auto it = std::find_if(dancer._M_donors.begin(), dancer._M_donors.end(), 
+            [&](const std::pair<donor_t, donation_val_t>& lhs) {return lhs.first == donor;});
+        if (it == dancer._M_donors.end()) dancer._M_donors.emplace_back(donor, amt);
+        else 
+        {
+            donation_val_t donor_amt = it->second;
+            donor_amt = donor_amt + amt;
+            it->second = donor_amt;
+        }
     }
 }
 
