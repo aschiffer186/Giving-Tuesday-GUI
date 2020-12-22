@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <array>
 #include "basic_types.h"
 
 namespace GTD 
@@ -13,18 +14,19 @@ namespace GTD
 
     struct matching_criterion_t
     {
-        double _M_leadership_percentage;
-        double _M_dancer_percentage;
-        donation_val_t _M_amt;
+        donation_val_t _M_general_amt;
+        donation_val_t _M_dancer_amt;
         donation_val_t _M_max_per_donor;
         donation_val_t _M_max_per_person;
         donation_val_t _M_max_per_donation;
+        date_time_t _M_start;
+        date_time_t _M_end;
     };
 
     //Total Donations, Mean Donation, Median Donation,  % of Total Fundraising, Num Participants, % of Total Participants
     #define DANCER_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, double, size_t, double>
-   //Hourly fundraising, mean donation size, median donation size, num donors, num unique donors, number of alumni donors, 
-   //number of unique alumni donors
+    //Hourly fundraising, mean donation size, median donation size, num donors, num unique donors, number of alumni donors, 
+    //number of unique alumni donors
     #define HOURLY_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, int, int, int, int>
 
     class matcher
@@ -70,7 +72,6 @@ namespace GTD
         //@param dancer_matched_amt the amount the dancer has already been matched
         //@return donation_amt the amount the dancer should be matched
         donation_val_t dancer_match(donation_val_t donation_amt, donation_val_t donor_matched_amt, donation_val_t dancer_matched_amt);
-
         //Calculates the amount that a steering member should be matched and subtracts from 
         //the appropriate matching pool. 
         //
@@ -79,6 +80,7 @@ namespace GTD
         //@param dancer_matched_amt the amount the dancer has already been matched
         //@return donation_amt the amount the dancer should be matched
         donation_val_t steering_match(donation_val_t donation_amt, donation_val_t donor_matched_amt, donation_val_t steering_matched_amt);
+        void reset_matching_pools();
         //Returns the amount a donor has donated to the specified dancer 
         //
         //@param dancer the specified dancer 
@@ -101,11 +103,11 @@ namespace GTD
             std::vector<donation_t> _M_donations;
             //Matching criteria 
             std::vector<matching_criterion_t> _M_matching_rounds;
-            std::vector<std::pair<date_time_t, date_time_t>> _M_matching_round_times;
+            matching_criterion_t _M_curr_criterion;
             donation_val_t _M_curr_general_matching_amt;
             donation_val_t _M_curr_dancer_matching_amt;
             //Statistic keeping information 
-            std::vector<std::vector<std::unordered_set<std::string>>> _M_alumni_donations;
+            std::vector<std::array<std::unordered_set<std::string>, 3>> _M_alumni_donations;
             std::unordered_map<std::string, std::unordered_set<dancer_t>> _M_dancer_types;
             //Outputs 
             std::unordered_map<std::string, dancer_t> _M_matching_info;

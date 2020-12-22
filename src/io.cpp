@@ -20,7 +20,7 @@ namespace GTD {
                 //std::cout << row << std::endl;
                 auto date = MAP_FIND(row, "Date")->second;
                 auto time = MAP_FIND(row, "Time")->second;
-                date_time_t dt = date_time_t::make_date_time(date, time);
+                date_time_t dt(date, time);
 
                 auto donor_first_name = row.find("Donor First Name")->second;
                 auto donor_last_name = row.find("Donor Last Name")->second;

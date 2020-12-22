@@ -3,7 +3,7 @@
 
 namespace GTD {
 
-    date_time_t date_time_t::make_date_time(const std::string& date, const std::string& time)
+    date_time_t::date_time_t(const std::string& date, const std::string& time)
     {
         short hour = static_cast<short>(std::stoi(time.substr(0, time.find(":"))));
         short min = static_cast<short>(std::stoi(time.substr(time.find(":") + 1, time.find(":") + 3)));
@@ -16,7 +16,8 @@ namespace GTD {
         int year = std::stoi(time.substr(7));
         auto donation_date = std::make_tuple(hour, min, sec);
 
-        return {donation_time, donation_date};
+        _M_time = donation_time;
+        _M_date = donation_date;
     }
 
     bool operator<(const date_time_t& lhs, const date_time_t& rhs)
@@ -39,6 +40,38 @@ namespace GTD {
         if (std::get<1>(lhs_time) < std::get<1>(rhs_time))
             return true;
         return std::get<2>(lhs_time) < std::get<2>(rhs_time);
+    }
+
+    bool operator>(const date_time_t& lhs, const date_time_t& rhs)
+    {
+        auto lhs_date = lhs._M_date;
+        auto rhs_date = rhs._M_date;
+        //Check if dates are different
+        if (std::get<0>(lhs_date) > std::get<0>(rhs_date)) 
+            return true;
+        if (std::get<1>(lhs_date) > std::get<1>(rhs_date))
+            return true;
+        if(std::get<2>(lhs_date) > std::get<2>(rhs_date))
+            return true;
+        //Date is same, compare times 
+        auto lhs_time = lhs._M_time;
+        auto rhs_time = rhs._M_time;
+
+        if(std::get<0>(lhs_time) > std::get<0>(rhs_time))
+            return true;
+        if (std::get<1>(lhs_time) > std::get<1>(rhs_time))
+            return true;
+        return std::get<2>(lhs_time) > std::get<2>(rhs_time);
+    }
+
+    bool operator>=(const date_time_t& lhs, const date_time_t& rhs)
+    {
+        return !(lhs < rhs);
+    }
+
+    bool operator<=(const date_time_t& lhs, const date_time_t& rhs)
+    {
+        return !(lhs > rhs);
     }
 
     date_time_t::operator std::string() const 

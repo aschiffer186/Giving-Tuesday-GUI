@@ -19,7 +19,9 @@ namespace GTD {
         //Creates a new date_time_t from formatted date and time strings 
         //@param date the formatted date string 
         //@param time the formatted time string
-        static date_time_t make_date_time(const std::string& date, const std::string& time);
+        date_time_t(const std::string& date, const std::string& time);
+
+        date_time_t() = default;
         //Date in year-month-day format
         std::tuple<int,short,short> _M_date;
         //Time in hour-min-second dformat
@@ -30,6 +32,9 @@ namespace GTD {
     };
 
     bool operator<(const date_time_t& lhs, const date_time_t& rhs);
+    bool operator>(const date_time_t& lhs, const date_time_t& rhs);
+    bool operator>=(const date_time_t& lhs, const date_time_t& rhs);
+    bool operator<=(const date_time_t& lhs, const date_time_t& rhs);
 
     //Types to represent a donation's amount
     using donation_val_t = std::pair<int, int>;

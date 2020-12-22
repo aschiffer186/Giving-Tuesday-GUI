@@ -14,5 +14,8 @@ include_directories(src/include lib)
 #Set sources 
 file(GLOB SOURCES "src/*.cpp" test/compile_check.cpp)
 
+#Set binary directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 add_executable(Test ${SOURCES})
 
