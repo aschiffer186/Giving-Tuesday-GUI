@@ -32,13 +32,19 @@ namespace GTD
     class matcher
     {
         public:
+        //Creates a new matcher with the specified list of donations 
+        //and list of matching criteria. Note if the timestamp of the 
+        //first donation is after the time end of the first matching 
+        //round, the behavior of this class is undefined. 
         matcher(const std::vector<donation_t>& donation_list, 
-        const std::vector<matching_criterion_t>& matching_rounds,
-        const std::vector<std::pair<date_time_t, date_time_t>>& matching_round_times);
+        const std::vector<matching_criterion_t>& matching_rounds);
 
+        //Creates a new matcher with the specified list of donations 
+        //and list of matching criteria using move constructors. Note if the timestamp of the 
+        //first donation is after the time end of the first matching 
+        //round, the behavior of this class is undefined. 
         matcher(std::vector<donation_t>&& donation_list, 
-        std::vector<matching_criterion_t>&& matching_rounds,
-        std::vector<std::pair<date_time_t, date_time_t>>&& matching_round_times);
+        std::vector<matching_criterion_t>&& matching_rounds);
 
         //Calculates how much each dancer will be matched as well as 
         //all requested statistics about Giving Tuesday
@@ -80,7 +86,16 @@ namespace GTD
         //@param dancer_matched_amt the amount the dancer has already been matched
         //@return donation_amt the amount the dancer should be matched
         donation_val_t steering_match(donation_val_t donation_amt, donation_val_t donor_matched_amt, donation_val_t steering_matched_amt);
-        void reset_matching_pools();
+        //Initializes the current matching criterion and matching pools based on the 
+        //timestamp of the first donation. Called wwhen the matcher object is 
+        //created. 
+        void initialize_matching_pools();
+        //Resets the matching pools with the current matchig criterion or 
+        //with the "NO_MATCHING" matching_criterion_t indicating that no 
+        //donations should be matched. 
+        void reset_matching_pools(const date_time_t& dt);
+        //Set matching pools so that no matching can happen
+        void zero_matching_pools();
         //Returns the amount a donor has donated to the specified dancer 
         //
         //@param dancer the specified dancer 
@@ -98,6 +113,7 @@ namespace GTD
         //Will most likely needed functions to "build" dancer statistics and hourly statistics outputs
         private:
             static const matching_criterion_t NO_MATCHING;
+            static bool is_no_matching(const matching_criterion_t& mc);
         private:
             //List of donations
             std::vector<donation_t> _M_donations;
@@ -107,8 +123,11 @@ namespace GTD
             donation_val_t _M_curr_general_matching_amt;
             donation_val_t _M_curr_dancer_matching_amt;
             //Statistic keeping information 
+            donation_val_t _M_total_raised;
             std::vector<std::array<std::unordered_set<std::string>, 3>> _M_alumni_donations;
             std::unordered_map<std::string, std::unordered_set<dancer_t>> _M_dancer_types;
+            std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_general;
+            std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_dancer;
             //Outputs 
             std::unordered_map<std::string, dancer_t> _M_matching_info;
             std::vector<donor_t> _M_donors;

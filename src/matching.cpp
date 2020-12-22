@@ -2,11 +2,16 @@
 
 namespace GTD
 {
-    const matching_criterion_t matcher::NO_MATCHING = {ZERO, ZERO, ZERO, ZERO, ZERO, date_tme_t(), date_time_t()};
+    const matching_criterion_t matcher::NO_MATCHING = {ZERO, ZERO, ZERO, ZERO, ZERO, date_time_t(), date_time_t()};
+
+    bool matcher::is_no_matching(const matching_criterion_t& mc)
+    {
+        return mc._M_dancer_amt == ZERO && mc._M_general_amt == ZERO && mc._M_max_per_donation == ZERO
+            && mc._M_max_per_donor == ZERO && mc._M_max_per_person == ZERO;
+    }
 
     matcher::matcher(const std::vector<donation_t>& donation_list, 
-        const std::vector<matching_criterion_t>& matching_rounds,
-        const std::vector<std::pair<date_time_t, date_time_t>>& matching_round_times)
+        const std::vector<matching_criterion_t>& matching_rounds)
         : _M_donations(donation_list),
         _M_matching_rounds(matching_rounds),
         _M_curr_general_matching_amt(),
@@ -19,12 +24,11 @@ namespace GTD
         _M_hour_statistics(),
         _M_dancer_statistics()
         {
-
+            initialize_matching_pools();
         }
 
     matcher::matcher(std::vector<donation_t>&& donation_list, 
-        std::vector<matching_criterion_t>&& matching_rounds,
-        std::vector<std::pair<date_time_t, date_time_t>>&& matching_round_times)
+        std::vector<matching_criterion_t>&& matching_rounds)
         : _M_donations(donation_list),
         _M_matching_rounds(matching_rounds),
         _M_curr_general_matching_amt(),
@@ -37,12 +41,122 @@ namespace GTD
         _M_hour_statistics(),
         _M_dancer_statistics()
         {
-            
+            initialize_matching_pools();
         }
+    
+    void matcher::initialize_matching_pools()
+    {
+        if (_M_matching_rounds.empty())
+        {
+            zero_matching_pools();
+        } else {
+            auto timestamp = _M_donations.front()._M_timestamp;
+            if (timestamp < _M_matching_rounds.back()._M_start)
+            {
+               zero_matching_pools();
+            } else 
+            {
+                _M_curr_criterion = _M_matching_rounds.back();
+                _M_curr_general_matching_amt = _M_curr_criterion._M_general_amt;
+                _M_curr_dancer_matching_amt = _M_curr_criterion._M_dancer_amt;
+            }
+        }
+    }
 
     const std::unordered_map<std::string, dancer_t>& matcher::get_matching_information() const
     {
         return _M_matching_info;
+    }
+
+    const std::unordered_map<std::string, DANCER_STATISTICS_ROW>& matcher::get_dancer_statistics() const
+    {
+        return _M_dancer_statistics;
+    }
+
+    const std::unordered_map<date_time_t, HOURLY_STATISTICS_ROW>& matcher::get_hourly_statistics() const
+    {
+        return _M_hour_statistics;
+    }
+
+    const std::vector<donor_t>& matcher::get_donor_information() const
+    {
+        return _M_donors;
+    }
+
+    std::vector<std::pair<date_time_t, donation_val_t>> matcher::get_general_matching_money_left() const
+    {
+        return _M_unused_general;
+    }
+
+    std::vector<std::pair<date_time_t, donation_val_t>> matcher::get_dancer_matching_money_left() const
+    {
+        return _M_unused_dancer;
+    }
+
+    void matcher::perform_matching_calculations()
+    {
+        //Iterator through all donations
+        for (const auto& donation: _M_donations)
+        {
+            //Check to see if need to reset matching pools
+            //Not thrilled with this solution but whatever 
+            if(!_M_matching_rounds.empty())
+            {
+              if(!is_no_matching(_M_curr_criterion)) 
+              {
+                if(donation._M_timestamp > _M_curr_criterion._M_end)
+                    reset_matching_pools(donation._M_timestamp);
+              } 
+              else 
+              {
+                if(donation._M_timestamp >= _M_matching_rounds.back()._M_start)
+                    reset_matching_pools(donation._M_timestamp);
+              }
+            }
+            //Get dancer and donor info
+            dancer_t dancer;
+            auto d_it = _M_matching_info.find(donation._M_dancer_id);
+            if (d_it == _M_matching_info.end()){
+                dancer = {
+                    donation._M_dancer_id,
+                    donation._M_dancer_name,
+                    donation._M_dancer_email,
+                    donation._M_dancer_role,
+                    donation._M_dancer_house,
+                    donation._M_dancer_team
+                };
+            } else 
+            {
+                dancer = d_it->second;
+            }
+            donor_t donor(
+                donation._M_donor_first_name,
+                donation._M_donor_last_name,
+                donation._M_donor_email,
+                donation._M_donor_phone,
+                donation._M_donor_card,
+                donation._M_donor_relation
+            );
+            //Update amount raised 
+            _M_total_raised = _M_total_raised + donation._M_amt;
+            //Calculate matching 
+            donation_val_t donor_matched_amt = get_donation_info(dancer, donor);
+            std::string role = dancer._M_dancer_role;
+            donation_val_t matched_amt;
+            if (role == "Dancer") matched_amt =dancer_match(donation._M_amt, donor_matched_amt, dancer._M_amt_matched);
+            else if (role != "DMUM") matched_amt = steering_match(donation._M_amt, donor_matched_amt, dancer._M_amt_matched);
+            //Update dancer matching 
+            dancer._M_amt_matched = dancer._M_amt_matched + matched_amt;
+            dancer._M_amt_raised = dancer._M_amt_raised + donation._M_amt;
+            update_donation_info(dancer, donor, matched_amt);
+            //Update donor matching 
+            donor._M_matched_amt = donor._M_matched_amt + matched_amt;
+            donor._M_donation_amt = donor._M_donation_amt + donation._M_amt;
+            //Update statistics 
+            //Dancer mathing information for Finance 
+            _M_matching_info[dancer._M_dancer_id] = dancer;
+            }
+        //Build statistics
     }
 
     donation_val_t matcher::dancer_match(donation_val_t donation_amt, donation_val_t donor_matched_amt, donation_val_t dancer_matched_amt)
@@ -115,21 +229,46 @@ namespace GTD
         return matched_amt;
     }
 
-    void matcher::reset_matching_pools()
+    void matcher::reset_matching_pools(const date_time_t& dt)
     {
+        //Add to unused amounts
+        _M_unused_general.emplace_back(_M_curr_criterion._M_start, _M_curr_general_matching_amt);
+        _M_unused_dancer.emplace_back(_M_curr_criterion._M_start, _M_curr_dancer_matching_amt);
         _M_matching_rounds.pop_back();
         if(!_M_matching_rounds.empty())
         {
-            _M_curr_criterion = _M_matching_rounds.back();
-            _M_curr_general_matching_amt = _M_curr_criterion._M_general_amt;
-            _M_curr_dancer_matching_amt = _M_curr_criterion._M_dancer_amt;
+            //Check if matching criterion immediately following current one 
+            if (dt >= _M_matching_rounds.back()._M_start)
+            {
+                _M_curr_criterion = _M_matching_rounds.back();
+                _M_curr_general_matching_amt = _M_curr_general_matching_amt + _M_curr_criterion._M_general_amt;
+                _M_curr_dancer_matching_amt = _M_curr_dancer_matching_amt + _M_curr_criterion._M_dancer_amt;
+            } 
+            else //We're in between matching criteria 
+            {
+                zero_matching_pools();
+            }
         } 
+        //Done with matching for duration of program
         else 
         {
-            _M_curr_criterion = NO_MATCHING;
-            _M_curr_general_matching_amt = ZERO;
-            _M_curr_dancer_matching_amt = ZERO;
+           zero_matching_pools();
         }
+    }
+
+    void matcher::zero_matching_pools()
+    {
+        _M_curr_criterion = NO_MATCHING;
+        _M_curr_general_matching_amt = ZERO;
+        _M_curr_dancer_matching_amt = ZERO;
+    }
+
+    donation_val_t matcher::get_donation_info(const dancer_t& dancer, const donor_t& donor)
+    {
+         auto it = std::find_if(dancer._M_donors.begin(), dancer._M_donors.end(),
+            [&](const std::pair<donor_t, donation_val_t>& lhs) {return lhs.first == donor;});
+        if (it == dancer._M_donors.end()) return ZERO;
+        return it->second;
     }
 }
 

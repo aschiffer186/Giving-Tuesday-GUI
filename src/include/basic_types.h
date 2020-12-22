@@ -214,7 +214,7 @@ namespace GTD {
             const std::string& house, 
             const std::string& team
             );
-        
+        dancer_t() = default;
         //The dancer's peer id
         std::string _M_dancer_id;
         //The dancer's name
