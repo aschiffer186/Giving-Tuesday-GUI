@@ -20,6 +20,11 @@ namespace GTD {
         _M_date = donation_date;
     }
 
+    short date_time_t::get_hour() const 
+    {
+        return std::get<0>(_M_time);
+    }
+
     bool operator<(const date_time_t& lhs, const date_time_t& rhs)
     {
         auto lhs_date = lhs._M_date;

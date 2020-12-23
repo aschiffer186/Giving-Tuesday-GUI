@@ -28,6 +28,7 @@ namespace GTD {
         std::tuple<short,short,short> _M_time;
         //Implicitly covert date_time sto std::string 
         //@return date_time_t in format yyyy/mm/dd hh:mm:ss
+        short get_hour() const;
         operator std::string() const;
     };
 

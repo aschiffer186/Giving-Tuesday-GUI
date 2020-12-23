@@ -98,8 +98,29 @@ namespace GTD
     void matcher::perform_matching_calculations()
     {
         //Iterator through all donations
-        for (const auto& donation: _M_donations)
+        std::pair<decltype(_M_donations.begin()), decltype(_M_donations.end())> curr_hour_donations;
+        for (size_t i = 0; i < _M_donations.size(); ++i)
         {
+            donation_t donation = _M_donations[i];
+            if (i == 0)
+                curr_hour_donations.first = _M_donations.begin();
+            else 
+            {
+                donation_t prev = _M_donations[i-1];
+                short prev_hour = prev._M_timestamp.get_hour();
+                short curr_hour = donation._M_timestamp.get_hour();
+                if(curr_hour > prev_hour)
+                {
+                    curr_hour_donations.second = _M_donations.begin() + i;
+                    _M_donations_by_hours[curr_hour_donations.first->_M_timestamp] = curr_hour_donations;
+                    curr_hour_donations.first = curr_hour_donations.second;
+                }
+                if (i == _M_donations.size() - 1)
+                {
+                    curr_hour_donations.second = _M_donations.end();
+                    _M_donations_by_hours[curr_hour_donations.first->_M_timestamp] = curr_hour_donations;
+                }
+            }
             //Check to see if need to reset matching pools
             //Not thrilled with this solution but whatever 
             if(!_M_matching_rounds.empty())
@@ -204,6 +225,8 @@ namespace GTD
             }
         }
         //Build statistics
+        generate_dancer_statistics();
+        generate_hour_statistics();
     }
 
     donation_val_t matcher::dancer_match(donation_val_t donation_amt, donation_val_t donor_matched_amt, donation_val_t dancer_matched_amt)
@@ -405,7 +428,40 @@ namespace GTD
 
     void matcher::generate_hour_statistics()
     {
-
+        for(const auto& hour: _M_donations_by_hours)
+        {
+            auto donations_start = hour.second.first;
+            auto donation_end = hour.second.second;
+            donation_val_t total_raised;
+            size_t num_donations = 0;
+            size_t num_alumni_donations = 0;
+            std::unordered_set<std::string> unique_donors;
+            std::unordered_set<std::string> unique_alumni_donors;
+            std::vector<donation_val_t> donation_list;
+            for(; donations_start != donation_end; ++donations_start)
+            {
+                total_raised = total_raised + donations_start->_M_amt;
+                donation_list.push_back(donations_start->_M_amt);
+                ++num_donations;
+                unique_donors.insert(donations_start->_M_donor_phone);
+                if (donations_start->_M_donor_relation.find("DMUM Alumni") != std::string::npos) 
+                {
+                    ++num_alumni_donations;
+                    unique_alumni_donors.insert(donations_start->_M_donor_phone);
+                }
+            }
+            std::sort(donation_list.begin(), donation_list.end());
+            donation_val_t median_donation;
+            if (donation_list.size() == 1)
+                median_donation = donation_list.front();
+            else if (donation_list.size() % 2 == 1) 
+                median_donation = donation_list[donation_list.size() / 2];
+            else 
+                median_donation = (donation_list[donation_list.size()/2 - 1] + donation_list[donation_list.size()/2])/2;
+            donation_val_t avg_donation = total_raised/num_donations;
+            _M_hour_statistics[hour.first] = std::make_tuple(total_raised, avg_donation, median_donation, num_donations, 
+                unique_donors.size(), num_alumni_donations, unique_alumni_donors.size());
+        }
     }
 }
 

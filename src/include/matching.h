@@ -28,7 +28,7 @@ namespace GTD
     #define DANCER_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, double, size_t, double>
     //Hourly fundraising, mean donation size, median donation size, num donors, num unique donors, number of alumni donors, 
     //number of unique alumni donors
-    #define HOURLY_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, int, int, int, int>
+    #define HOURLY_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, size_t, size_t, size_t, size_t>
 
     class matcher
     {
@@ -134,6 +134,7 @@ namespace GTD
             //Statistic keeping information 
             donation_val_t _M_total_raised;
             std::vector<std::unordered_map<std::string, std::unordered_set<std::string>>> _M_alumni_donations;
+            std::unordered_map<date_time_t, std::pair<decltype(_M_donations.begin()), decltype(_M_donations.begin())>> _M_donations_by_hours;
             std::unordered_map<std::string, std::set<dancer_t>> _M_dancers_by_type;
             std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_general;
             std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_dancer;
