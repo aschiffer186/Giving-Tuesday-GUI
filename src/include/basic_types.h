@@ -46,7 +46,7 @@ namespace GTD {
     donation_val_t operator-(const donation_val_t& lhs, const donation_val_t& rhs);
 
     template<typename _DTp>
-    inline donation_val_t operator/(const donation_val_t& lhs, _DTp& rhs)
+    donation_val_t operator/(const donation_val_t& lhs, const _DTp& rhs)
     {
         double dollars = lhs.first;
         double cents = lhs.second;

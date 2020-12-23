@@ -1,4 +1,6 @@
 #include "include/matching.h"
+#include <numeric>
+#include <algorithm>
 
 namespace GTD
 {
@@ -17,7 +19,6 @@ namespace GTD
         _M_curr_general_matching_amt(),
         _M_curr_dancer_matching_amt(),
         _M_alumni_donations(),
-        _M_donations_by_type(),
         _M_dancers_by_type(),
         _M_matching_info(),
         _M_donors(),
@@ -35,7 +36,6 @@ namespace GTD
         _M_curr_general_matching_amt(),
         _M_curr_dancer_matching_amt(),
         _M_alumni_donations(),
-        _M_donations_by_type(),
         _M_dancers_by_type(),
         _M_matching_info(),
         _M_donors(),
@@ -279,8 +279,11 @@ namespace GTD
     void matcher::reset_matching_pools(const date_time_t& dt)
     {
         //Add to unused amounts
-        _M_unused_general.emplace_back(_M_curr_criterion._M_start, _M_curr_general_matching_amt);
-        _M_unused_dancer.emplace_back(_M_curr_criterion._M_start, _M_curr_dancer_matching_amt);
+        if (!is_no_matching(_M_curr_criterion)) 
+        {
+            _M_unused_general.emplace_back(_M_curr_criterion._M_start, _M_curr_general_matching_amt);
+            _M_unused_dancer.emplace_back(_M_curr_criterion._M_start, _M_curr_dancer_matching_amt);
+        }
         _M_matching_rounds.pop_back();
         if(!_M_matching_rounds.empty())
         {
@@ -288,8 +291,8 @@ namespace GTD
             if (dt >= _M_matching_rounds.back()._M_start)
             {
                 _M_curr_criterion = _M_matching_rounds.back();
-                _M_curr_general_matching_amt = _M_curr_general_matching_amt + _M_curr_criterion._M_general_amt;
-                _M_curr_dancer_matching_amt = _M_curr_dancer_matching_amt + _M_curr_criterion._M_dancer_amt;
+                _M_curr_general_matching_amt = _M_unused_general.back().second + _M_curr_criterion._M_general_amt;
+                _M_curr_dancer_matching_amt = _M_unused_dancer.back().second + _M_curr_criterion._M_dancer_amt;
             } 
             else //We're in between matching criteria 
             {
@@ -336,19 +339,72 @@ namespace GTD
         std::string role = dancer._M_dancer_role;
         if(role == "DMUM") return;
         //Update based on role
-        auto donation_role_it = _M_donations_by_type.find(role);
-        if (donation_role_it == _M_donations_by_type.end())
+        update_statistics_table(dancer, d, role);
+        //Update based on house 
+        std::string house = dancer._M_dancer_house;
+        update_statistics_table(dancer, d, house);
+        //Update leadership role is needed 
+        if(role != "Dancer")
         {
-            _M_donations_by_type[role] = {d};
+           update_statistics_table(dancer, d, "Leadership");
+        }
+    }
+
+    void matcher::update_statistics_table(const dancer_t& dancer, const donation_val_t&d, const std::string& role)
+    {
+        auto it = _M_dancers_by_type.find(role);
+        if (it == _M_dancers_by_type.end())
+        {
             _M_dancers_by_type[role] = {dancer};
         }
         else 
         {
             auto dancers_role_it = _M_dancers_by_type.find(role);
-            donation_role_it->second.insert(d);
             auto dancer_it = dancers_role_it->second.find(dancer);
-            //dancer_it->_M_amt_raised = dancer_it->_M_amt_raised + d;
+            if (dancer_it == dancers_role_it->second.end())
+            {
+                dancers_role_it->second.insert(dancer);
+            }
+            else 
+            {
+                dancers_role_it->second.erase(dancer_it);
+                dancers_role_it->second.insert(dancer);
+            }
         }
+    }
+
+    void matcher::generate_dancer_statistics()
+    {
+        double total_participants = _M_matching_info.size();
+        double total_raised = _M_total_raised.first + _M_total_raised.second*0.01;
+        auto it1 = _M_dancers_by_type.begin();
+        while (it1 != _M_dancers_by_type.end())
+        {
+            std::string role = it1->first;
+            auto dancer_set = it1->second;
+            donation_val_t total_donations = std::accumulate(dancer_set.begin(), dancer_set.end(), std::make_pair(0,0), 
+                [](const donation_val_t& lhs, const dancer_t& rhs) {return lhs + rhs._M_amt_raised;});
+            donation_val_t avg_donation = total_donations/dancer_set.size();
+            std::vector<donation_val_t> donation_list;
+            std::sort(donation_list.begin(), donation_list.end());
+            donation_val_t median_donation;
+            if (donation_list.size() == 1)
+                median_donation = donation_list.front();
+            else if (donation_list.size() % 2 == 1) 
+                median_donation = donation_list[donation_list.size() / 2];
+            else 
+                median_donation = (donation_list[donation_list.size()/2 - 1] + donation_list[donation_list.size()/2])/2;
+            size_t num_participants = dancer_set.size();
+            double type_fundraising = total_donations.first + total_donations.second*0.01;
+            double percent_of_total = type_fundraising/total_raised;
+            double percent_of_participants = num_participants/total_participants;
+            _M_dancer_statistics[role] = std::make_tuple(total_donations, avg_donation, median_donation, 
+                percent_of_total, num_participants, percent_of_participants);
+        }
+    }
+
+    void matcher::generate_hour_statistics()
+    {
 
     }
 }

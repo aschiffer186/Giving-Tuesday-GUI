@@ -110,8 +110,16 @@ namespace GTD
         void update_donation_info(dancer_t& dancer, const donor_t& donor, donation_val_t amt);
         //Updates the dancer statistics information with the dancers new fundraising total
         //@param dancer the dancer whose total will be used to update the fundraising statistics
+        //@param d the donation used to update fundraising statistics
         void update_dancer_statistics(const dancer_t& dancer, const donation_val_t& d);
+        //Insert the specified dancer and donation into the statistics table row for the specified role
+        //@param dancer the dancer whose total will be used to update the fundraising statistics
+        //@param d the donation used to update fundraising statistics
+        //@param role the dancer's row
+        void update_statistics_table(const dancer_t& dancer, const donation_val_t&d, const std::string& role);
         //Will most likely needed functions to "build" dancer statistics and hourly statistics outputs
+        void generate_dancer_statistics();
+        void generate_hour_statistics();
         private:
             static const matching_criterion_t NO_MATCHING;
             static bool is_no_matching(const matching_criterion_t& mc);
@@ -126,7 +134,6 @@ namespace GTD
             //Statistic keeping information 
             donation_val_t _M_total_raised;
             std::vector<std::unordered_map<std::string, std::unordered_set<std::string>>> _M_alumni_donations;
-            std::unordered_map<std::string, std::set<donation_val_t>> _M_donations_by_type;
             std::unordered_map<std::string, std::set<dancer_t>> _M_dancers_by_type;
             std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_general;
             std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_dancer;
