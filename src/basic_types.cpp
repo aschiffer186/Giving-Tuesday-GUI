@@ -11,10 +11,10 @@ namespace GTD {
 
         auto donation_time = std::make_tuple(hour, min, sec);
 
-        short month = static_cast<short>(std::stoi(time.substr(0, 2)));
-        short day = static_cast<short>(std::stoi(time.substr(3, 5)));
-        int year = std::stoi(time.substr(7));
-        auto donation_date = std::make_tuple(hour, min, sec);
+        short month = static_cast<short>(std::stoi(date.substr(0, 2)));
+        short day = static_cast<short>(std::stoi(date.substr(3, 5)));
+        int year = std::stoi(date.substr(7));
+        auto donation_date = std::make_tuple(year, month, day);
 
         _M_time = donation_time;
         _M_date = donation_date;
@@ -79,6 +79,11 @@ namespace GTD {
         return !(lhs > rhs);
     }
 
+    bool operator==(const date_time_t& lhs, const date_time_t& rhs)
+    {
+        return (lhs >= rhs) && (lhs <= rhs);
+    }
+
     date_time_t::operator std::string() const 
     {
         short hour = std::get<0>(_M_time);
@@ -89,13 +94,13 @@ namespace GTD {
         short month = std::get<1>(_M_date);
         short day = std::get<2>(_M_date);
 
-        std::string year_string = std::to_string(year);
+        std::string year_string = (year < 1e3) ? "20" + std::to_string(year) : std::to_string(year);
         std::string month_string = (month < 10) ? "0" + std::to_string(month) : std::to_string(month);
         std::string day_string = (day < 10) ? "0" + std::to_string(day) : std::to_string(day);
 
-        std::string hour_string = (hour == 0) ? "00" : std::to_string(hour);
-        std::string min_string = (min == 0) ? "00" : std::to_string(min);
-        std::string sec_string = (sec == 0) ? "00" : std::to_string(sec);
+        std::string hour_string = (hour < 10) ? "0" + std::to_string(hour) : std::to_string(hour);
+        std::string min_string = (min < 10) ? "0" + std::to_string(min) : std::to_string(min);
+        std::string sec_string = (sec < 10) ? "0" + std::to_string(sec) : std::to_string(sec);
         //Output information
         return year_string + "/" + month_string + "/" + day_string + " " + 
             hour_string + ":" + min_string + ":" + sec_string + ", ";

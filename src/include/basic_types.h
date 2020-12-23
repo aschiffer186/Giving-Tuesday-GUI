@@ -36,6 +36,7 @@ namespace GTD {
     bool operator>(const date_time_t& lhs, const date_time_t& rhs);
     bool operator>=(const date_time_t& lhs, const date_time_t& rhs);
     bool operator<=(const date_time_t& lhs, const date_time_t& rhs);
+    bool operator==(const date_time_t& lhs, const date_time_t& rhs);
 
     //Types to represent a donation's amount
     using donation_val_t = std::pair<int, int>;

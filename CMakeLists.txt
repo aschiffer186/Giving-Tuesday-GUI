@@ -18,4 +18,5 @@ file(GLOB SOURCES "src/*.cpp" test/compile_check.cpp)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(Test ${SOURCES})
+add_executable(Test_IO test/test_io.cpp src/io.cpp src/basic_types.cpp)
 
