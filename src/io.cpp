@@ -7,14 +7,12 @@ namespace GTD {
 
     #define MAP_FIND(map, o) std::find_if(map.begin(), map.end(), [](const std::pair<std::string, std::string>& p){return p.first.find(o) != std::string::npos;})
 
-    std::vector<donation_t> read_donations(const char* filename, size_t num_donations)
+    void read_csv_donations(std::vector<donation_t>& donations, const char* filename)
     {
         try 
         {
             csvstream csvin(filename);
             csvrow_t row; 
-            std::vector<donation_t> donations;
-            donations.reserve(num_donations);
             while (csvin >> row) 
             {
                 //std::cout << row << std::endl;
@@ -53,7 +51,6 @@ namespace GTD {
                     dancer_id
                 );
             }
-            return donations;
         } catch (const csvstream_exception& ex)
         {
             std::cout << "Error: " << filename << " not found. Program terminated." << std::endl;
@@ -63,6 +60,15 @@ namespace GTD {
             std::cout << "Unhandled Exception" << std::endl;
             exit(EXIT_FAILURE);
         }
+    }
+
+    std::vector<donation_t> read_donations(const std::string& filename, size_t num_donations)
+    {
+        std::vector<donation_t> donations;
+        donations.reserve(num_donations);
+        if(filename.find(".csv") != std::string::npos)
+            read_csv_donations(donations, filename.c_str());
+        return donations;
     }
 }
 

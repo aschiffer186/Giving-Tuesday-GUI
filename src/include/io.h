@@ -11,13 +11,12 @@
 #include <unordered_map>
 
 namespace GTD {
-
     //Reads in the donations from a list of donations and compiles them into a vector.
     //
     //@param filename the file containing the donations 
     //@param num_donations optional paramater, the number of donations (knowing this will save
     //                     time and memory) 
-    std::vector<donation_t> read_donations(const char* filename, size_t num_donations = 0);
+    std::vector<donation_t> read_donations(const std::string& filename, size_t num_donations = 0);
 
 
     template<typename _KTp, typename _VTp>
