@@ -85,11 +85,6 @@ namespace GTD
         return _M_donors;
     }
 
-    const std::vector<donor_t>& matcher::get_alumni_donor_information() const
-    {
-        return _M_alumni;
-    }
-
     std::vector<std::pair<date_time_t, donation_val_t>> matcher::get_general_matching_money_left() const
     {
         return _M_unused_general;
