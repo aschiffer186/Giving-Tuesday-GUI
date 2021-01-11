@@ -69,6 +69,8 @@ namespace GTD {
 
     donation_val_t make_donation(const std::string& donation);
     donation_val_t make_donation(int dollar, int cents);
+    
+    std::ostream& operator<<(std::ostream& os, const donation_val_t& d);
 
     //A struct to represent a single donation 
     //Includes information about
@@ -186,7 +188,6 @@ namespace GTD {
         donation_val_t _M_donation_amt;
         //The total amount the donor was matched
         donation_val_t _M_matched_amt;
-        //List of dancers donated_to
     };
 
     bool operator==(const donor_t& lhs, const donor_t& rhs);

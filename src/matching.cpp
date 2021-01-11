@@ -70,7 +70,7 @@ namespace GTD
         return _M_matching_info;
     }
 
-    const std::unordered_map<std::string, DANCER_STATISTICS_ROW>& matcher::get_dancer_statistics() const
+    const std::unordered_map<std::string, dancer_statistics_row>& matcher::get_dancer_statistics() const
     {
         return _M_dancer_statistics;
     }
@@ -83,6 +83,11 @@ namespace GTD
     const std::vector<donor_t>& matcher::get_donor_information() const
     {
         return _M_donors;
+    }
+
+    const std::vector<donor_t>& matcher::get_alumni_donor_information() const
+    {
+        return _M_alumni;
     }
 
     std::vector<std::pair<date_time_t, donation_val_t>> matcher::get_general_matching_money_left() const

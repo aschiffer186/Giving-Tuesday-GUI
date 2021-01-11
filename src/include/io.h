@@ -9,6 +9,7 @@
 #include <fstream>
 #include <map>
 #include <unordered_map>
+#include <functional>
 
 namespace GTD {
     //Reads in the donations from a list of donations and compiles them into a vector.
@@ -43,20 +44,24 @@ namespace GTD {
         return os;
     }
 
+    template<typename _IterTp, typename _FuncTp>
+    void write_to_xlsx(const std::string& filename, _IterTp begin, _IterTp end, const std::string& header_row, _FuncTp print_row)
+    {
+        if(filename.find(".csv") != std::string::npos)
+            write_to_csv(filename, begin, end, header_row, print_row);
+    }
 
     template<typename _IterTp, typename _FuncTp>
-    void write_to_file(const char* filename, _IterTp begin, _IterTp end, const std::string& header_row, _FuncTp print_row)
+    void write_to_csv(const std::string& filename, _IterTp begin, _IterTp end, const std::string& header_row, _FuncTp print_row)
     {
-        std::ofstream fout(filename);
+        std::ofstream fout(filename.c_str());
         fout << header_row << "\n";
         while(begin != end) 
         {
-            print_row(fout, *begin++);
-            fout << "\n";
+            print_row(fout,*begin++);
         }
         fout.close();
     }
-
 }
 
 #endif

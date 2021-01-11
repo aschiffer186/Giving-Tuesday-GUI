@@ -106,8 +106,6 @@ namespace GTD {
             hour_string + ":" + min_string + ":" + sec_string + ", ";
     }
 
-
-
     std::ostream& operator<<(std::ostream& os, const donation_val_t& d)
     {
         std::string cents_string;

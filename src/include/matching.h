@@ -25,10 +25,10 @@ namespace GTD
     };
 
     //Total Donations, Mean Donation, Median Donation,  % of Total Fundraising, Num Participants, % of Total Participants
-    #define DANCER_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, double, size_t, double>
+    typedef GTD::output_row_t<donation_val_t, donation_val_t, donation_val_t, double, size_t, double> dancer_statistics_row;
     //Hourly fundraising, mean donation size, median donation size, num donors, num unique donors, number of alumni donors, 
     //number of unique alumni donors
-    #define HOURLY_STATISTICS_ROW output_row_t<donation_val_t, donation_val_t, donation_val_t, size_t, size_t, size_t, size_t>
+    #define HOURLY_STATISTICS_ROW GTD::output_row_t<donation_val_t, donation_val_t, donation_val_t, size_t, size_t, size_t, size_t>
 
     class matcher
     {
@@ -55,7 +55,7 @@ namespace GTD
         const std::unordered_map<std::string, dancer_t>& get_matching_information() const;
         //Returns fundraising breakdown by dancer type (e.g. assorted vs fslr vs steering etc.)
         //@return fundraising breakdown by dancer type
-        const std::unordered_map<std::string, DANCER_STATISTICS_ROW>& get_dancer_statistics() const;
+        const std::unordered_map<std::string, dancer_statistics_row>& get_dancer_statistics() const;
         //Returns statistics broken down by hour 
         //@return fundraising statistics broken down by hour
         const std::unordered_map<date_time_t, HOURLY_STATISTICS_ROW>& get_hourly_statistics() const;
@@ -143,7 +143,7 @@ namespace GTD
             std::vector<donor_t> _M_donors;
             std::vector<donor_t> _M_alumni;
             std::unordered_map<date_time_t, HOURLY_STATISTICS_ROW> _M_hour_statistics;
-            std::unordered_map<std::string, DANCER_STATISTICS_ROW> _M_dancer_statistics;
+            std::unordered_map<std::string, dancer_statistics_row> _M_dancer_statistics;
 
 
     };
