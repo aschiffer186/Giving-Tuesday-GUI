@@ -189,6 +189,12 @@ namespace GTD
             auto donor_it = std::find(_M_donors.begin(), _M_donors.end(), donor);
             if (donor_it == _M_donors.end())
             {
+                if (dancer._M_dancer_role == "DMUM")
+                    donor._M_dancer_ids["DMUM"].insert(dancer._M_dancer_id);
+                else if (dancer._M_dancer_role == "Dancer")
+                        donor._M_dancer_ids["Dancer"].insert(dancer._M_dancer_id);
+                else
+                    donor._M_dancer_ids["Leadership"].insert(dancer._M_dancer_id);
                 _M_donors.push_back(donor);
             } 
             else 
@@ -196,6 +202,12 @@ namespace GTD
                 donor_t& d = *donor_it;
                 d._M_donation_amt = d._M_donation_amt + donation._M_amt;
                 d._M_matched_amt = d._M_matched_amt + matched_amt;
+                if (dancer._M_dancer_role == "DMUM")
+                    donor._M_dancer_ids["DMUM"].insert(dancer._M_dancer_id);
+                else if (dancer._M_dancer_role == "Dancer")
+                        donor._M_dancer_ids["Dancer"].insert(dancer._M_dancer_id);
+                else
+                    donor._M_dancer_ids["Leadership"].insert(dancer._M_dancer_id);
             }
             //Update alumni info
             if(donor._M_donor_relation.find("DMUM Alumni") != std::string::npos)
@@ -203,29 +215,14 @@ namespace GTD
                 auto alumnus_it = std::find(_M_alumni.begin(), _M_alumni.end(), donor);
                 if (alumnus_it == _M_alumni.end())
                 {
-                    std::unordered_map<std::string, std::unordered_set<std::string>> donation_types;
-                    if (dancer._M_dancer_role == "DMUM")
-                        donation_types["DMUM"].insert(dancer._M_dancer_id);
-                    else if (dancer._M_dancer_role == "Dancer")
-                        donation_types["Dancer"].insert(dancer._M_dancer_id);
-                    else
-                        donation_types["Leadership"].insert(dancer._M_dancer_id);
+                    
                     _M_alumni.push_back(donor);
-                    _M_alumni_donations.push_back(donation_types);
                 } 
                 else 
                 {
                     donor_t& d = *alumnus_it;
                     d._M_donation_amt = d._M_donation_amt + donation._M_amt;
                     d._M_matched_amt = d._M_matched_amt + matched_amt;
-                    size_t index = static_cast<size_t>(alumnus_it - _M_alumni.begin());
-                    auto& donation_types = _M_alumni_donations[index];
-                    if (dancer._M_dancer_role == "DMUM")
-                        donation_types["DMUM"].insert(dancer._M_dancer_id);
-                    else if (dancer._M_dancer_role == "Dancer")
-                       donation_types["Dancer"].insert(dancer._M_dancer_id);
-                    else
-                       donation_types["Leadership"].insert(dancer._M_dancer_id);
                 }
             }
         }

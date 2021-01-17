@@ -191,7 +191,7 @@ namespace GTD {
          //List of dancers donated_to
         //Key: Dancer role 
         //Value: list of dancers with that role 
-        std::unordered_map<std::string, std::unordered_set<std::string>> __m_dancer_ids;
+        std::unordered_map<std::string, std::unordered_set<std::string>> _M_dancer_ids;
     }; //! donor_t
 
     bool operator==(const donor_t& lhs, const donor_t& rhs);
