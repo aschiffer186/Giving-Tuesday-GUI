@@ -14,7 +14,7 @@ namespace GTD
     {
         size_t _M_num_donations = 0; 
         std::string _M_input_file;
-        std::string _M_output_folder = ""; 
+        std::string _M_output_folder = "output"; 
     };
 
     opts process_command_line_args(int argc, char** argv);

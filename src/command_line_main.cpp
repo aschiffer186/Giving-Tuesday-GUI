@@ -4,9 +4,8 @@
 #include <stdexcept>
 #include "include/matching.h"
 #include "command_line_handler.h"
-#include "include/basic_types.h"
-#include "include/io.h"
-#include <xlnt.hpp>
+#include "basic_types.h"
+#include "io.h"
 
 namespace GTD {
 
@@ -22,7 +21,7 @@ namespace GTD {
                                     };
     //Dancer statistics ouput
     std::string statistics_header = "Type,Total Fundraised,Mean Fundraising,Median Fundraising,Number of Participants,% of Total Fundraisign,% of Total Participants";
-    auto statistics_row_func = [](std::ostream& fout, std::pair<std::string, GTD::dancer_statistics_row>& p)->std::ostream&
+    auto statistics_row_func = [](std::ostream& fout, const std::pair<std::string, GTD::dancer_statistics_row>& p)->std::ostream&
                                     {
                                         fout << p.first << ",";
                                         auto row = p.second;
@@ -39,8 +38,7 @@ namespace GTD {
                                     fout << donor._M_donation_amt << "," << donor._M_matched_amt;
                                     return fout;
                                 };
-    }
-    int main(int argc, char** argv)
+    void run(int argc, char** argv)
     {
         GTD::opts ops;
         try 
@@ -90,7 +88,20 @@ namespace GTD {
         auto hour_statistics = m.get_hourly_statistics();
         //Output matching information
         std::string output_folder = ops._M_output_folder;
+        for(auto it1 = dancer_matching_left.begin(), it2 = general_matching_left.begin(); it1 != dancer_matching_left.end(); ++it1, ++it2)
+        {
+            std::cout << "Dancer matching money unused during round beginning at " << static_cast<std::string>(it1->first) << ": " << it1->second << "\n";
+            std::cout << "General matching money unused during round beginning at " << static_cast<std::string>(it2->first) << ": " << it2->second << "\n";
+            std::cout << "\n";
+        }
         GTD::write_to_csv(output_folder + "/matching.csv", matching_info.begin(), matching_info.end(), GTD::matching_header, GTD::matching_row_func);
+        GTD::write_to_csv(output_folder + "/dancer_statics.csv", dancer_statistics.begin(), dancer_statistics.end(), GTD::statistics_header, GTD::statistics_row_func);
+        GTD::write_to_csv(output_folder + "/donors.csv", donor_info.begin(), donor_info.end(), GTD::donor_header, GTD::donor_row_func);
+    }
 
+    }
+    int main(int argc, char** argv)
+    {
+        GTD::run(argc, argv);
         return 0;
     }

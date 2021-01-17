@@ -253,7 +253,8 @@ namespace GTD {
             _M_donor_card(card),
             _M_donor_relation(relation),
             _M_donation_amt(ZERO),
-            _M_matched_amt(ZERO)
+            _M_matched_amt(ZERO),
+            _M_dancer_types()
             {
 
             }

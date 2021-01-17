@@ -59,6 +59,7 @@ namespace GTD {
         while(begin != end) 
         {
             print_row(fout,*begin++);
+            fout << "\n";
         }
         fout.close();
     }

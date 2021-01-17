@@ -30,7 +30,7 @@ namespace GTD {
         //@return date_time_t in format yyyy/mm/dd hh:mm:ss
         short get_hour() const;
         operator std::string() const;
-    };
+    }; //! date_time_t
 
     bool operator<(const date_time_t& lhs, const date_time_t& rhs);
     bool operator>(const date_time_t& lhs, const date_time_t& rhs);
@@ -58,7 +58,7 @@ namespace GTD {
         int cents_result = static_cast<int>(std::round(cents/rhs));
         int new_cents = cents_result + static_cast<int>(std::round((dollars_result - new_dollars)*100));
         return std::make_pair(new_dollars, new_cents);
-    }
+    } //! operator/
 
     //Comparison operator overloads
     bool operator<(const donation_val_t& lhs, const donation_val_t& rhs);
@@ -141,7 +141,7 @@ namespace GTD {
         std::string _M_dancer_role;
         //The associated peer id 
         std::string _M_dancer_id;
-    };
+    }; //! donation_t
 
     std::ostream& operator<<(std::ostream& os, const donation_t& d);
 
@@ -188,7 +188,11 @@ namespace GTD {
         donation_val_t _M_donation_amt;
         //The total amount the donor was matched
         donation_val_t _M_matched_amt;
-    };
+         //List of dancers donated_to
+        //Key: Dancer role 
+        //Value: list of dancers with that role 
+        std::unordered_map<std::string, std::unordered_set<std::string>> __m_dancer_ids;
+    }; //! donor_t
 
     bool operator==(const donor_t& lhs, const donor_t& rhs);
 

@@ -229,6 +229,12 @@ namespace GTD
                 }
             }
         }
+        //Record what is left
+        if (!is_no_matching(_M_curr_criterion)) 
+        {
+            _M_unused_general.emplace_back(_M_curr_criterion._M_start, _M_curr_general_matching_amt);
+            _M_unused_dancer.emplace_back(_M_curr_criterion._M_start, _M_curr_dancer_matching_amt);
+        }
         //Build statistics
         generate_dancer_statistics();
         generate_hour_statistics();
@@ -414,6 +420,10 @@ namespace GTD
                 [](const donation_val_t& lhs, const dancer_t& rhs) {return lhs + rhs._M_amt_raised;});
             donation_val_t avg_donation = total_donations/dancer_set.size();
             std::vector<donation_val_t> donation_list;
+            std::transform(dancer_set.begin(), dancer_set.end(), std::back_inserter(donation_list), [](const dancer_t& d)
+            {
+                return d._M_amt_raised;
+            });
             std::sort(donation_list.begin(), donation_list.end());
             donation_val_t median_donation;
             if (donation_list.size() == 1)
@@ -428,6 +438,7 @@ namespace GTD
             double percent_of_participants = num_participants/total_participants;
             _M_dancer_statistics[role] = std::make_tuple(total_donations, avg_donation, median_donation, 
                 percent_of_total, num_participants, percent_of_participants);
+            ++it1;
         }
     }
 

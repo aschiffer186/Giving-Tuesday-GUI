@@ -76,7 +76,7 @@ namespace GTD
         if(!input_seen)
             throw std::invalid_argument("Must specify input filename");
         if (!output_seen)
-            ops._M_output_folder = "";
+            ops._M_output_folder = "output";
         if(!num_donations_seen)
             ops._M_num_donations = 0;
         return ops;
