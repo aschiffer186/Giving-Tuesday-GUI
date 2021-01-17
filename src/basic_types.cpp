@@ -103,7 +103,7 @@ namespace GTD {
         std::string sec_string = (sec < 10) ? "0" + std::to_string(sec) : std::to_string(sec);
         //Output information
         return year_string + "/" + month_string + "/" + day_string + " " + 
-            hour_string + ":" + min_string + ":" + sec_string + ", ";
+            hour_string + ":" + min_string + ":" + sec_string;
     }
 
     std::ostream& operator<<(std::ostream& os, const donation_val_t& d)

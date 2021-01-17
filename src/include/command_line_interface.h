@@ -77,6 +77,17 @@ namespace GTD
                                     return fout;
                                 };
 
+    const static std::string hourly_statistics_header = "Hour,Hourly fundraising,mean donation size,median donation size,num donors,num unique donors,number of alumni donors,number of unique alumni donors";
+    auto hour_statistics_row = [](std::ostream& fout,const auto& p)->std::ostream&
+                                {
+                                    auto row = p.second;
+                                    fout << static_cast<std::string>(p.first) << ",";
+                                    fout << std::get<0>(row) << "," << std::get<1>(row) << "," << std::get<2>(row)  << ",";
+                                    fout << std::get<3>(row) << "," << std::get<4>(row) << "," << std::get<5>(row)  << ",";
+                                    fout << std::get<6>(row);
+                                    return fout;
+                                };
+
     void command_line_run(int argc, char** argv);
 }
 

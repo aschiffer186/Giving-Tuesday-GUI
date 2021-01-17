@@ -143,5 +143,8 @@ namespace GTD
         write_to_csv(output_folder + "/matching.csv", matching_info.begin(), matching_info.end(), matching_header, matching_row_func);
         write_to_csv(output_folder + "/dancer_statics.csv", dancer_statistics.begin(), dancer_statistics.end(), statistics_header, statistics_row_func);
         write_to_csv(output_folder + "/donors.csv", donor_info.begin(), donor_info.end(), donor_header, donor_row_func);
+        write_to_csv(output_folder + "/alumni_donors.csv", alumni_info.begin(), alumni_info.end(), alumni_donor_header, alumni_row_func);
+        write_to_csv(output_folder + "/alumni_statistics.csv", alumni_info.begin(), alumni_info.end(), alumni_statistics_header, alumni_statistics_row);
+        write_to_csv(output_folder + "/hourly_statistics.csv", hour_statistics.begin(), hour_statistics.end(), hourly_statistics_header, hour_statistics_row);
     }
 }

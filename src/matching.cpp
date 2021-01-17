@@ -112,7 +112,7 @@ namespace GTD
                 donation_t prev = _M_donations[i-1];
                 short prev_hour = prev._M_timestamp.get_hour();
                 short curr_hour = donation._M_timestamp.get_hour();
-                if(curr_hour > prev_hour)
+                if(curr_hour != prev_hour)
                 {
                     curr_hour_donations.second = _M_donations.begin() + i;
                     _M_donations_by_hours[curr_hour_donations.first->_M_timestamp] = curr_hour_donations;
