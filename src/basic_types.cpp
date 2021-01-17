@@ -1,4 +1,4 @@
-#include "include/basic_types.h"
+#include "basic_types.h"
 #include <string>
 
 namespace GTD {
@@ -254,7 +254,7 @@ namespace GTD {
             _M_donor_relation(relation),
             _M_donation_amt(ZERO),
             _M_matched_amt(ZERO),
-            _M_dancer_types()
+            _M_dancer_ids()
             {
 
             }
