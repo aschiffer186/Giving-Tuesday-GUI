@@ -34,7 +34,7 @@ namespace GTD
                                         return fout;
                                     };
     //Dancer statistics ouput
-    const static std::string statistics_header = "Type,Total Fundraised,Mean Fundraising,Median Fundraising,Number of Participants,% of Total Fundraisign,% of Total Participants";
+    const static std::string statistics_header = "Type,Total Fundraised,Mean Fundraising,Median Fundraising,% of Total Fundraising,Number of Participants,% of Total Participants";
     auto statistics_row_func = [](std::ostream& fout, const std::pair<std::string, GTD::dancer_statistics_row>& p)->std::ostream&
                                     {
                                         fout << p.first << ",";

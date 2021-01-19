@@ -73,7 +73,7 @@ namespace GTD
         return _M_dancer_statistics;
     }
 
-    const std::unordered_map<date_time_t, HOURLY_STATISTICS_ROW>& matcher::get_hourly_statistics() const
+    const std::map<date_time_t, hour_statistics_row>& matcher::get_hourly_statistics() const
     {
         return _M_hour_statistics;
     }

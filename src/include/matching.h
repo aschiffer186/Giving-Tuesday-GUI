@@ -4,7 +4,7 @@
 #include <memory> //For unique_ptr
 #include <deque>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <unordered_set>
 #include <array>
 #include <set>
@@ -28,7 +28,7 @@ namespace GTD
     typedef GTD::output_row_t<donation_val_t, donation_val_t, donation_val_t, double, size_t, double> dancer_statistics_row;
     //Hourly fundraising, mean donation size, median donation size, num donors, num unique donors, number of alumni donors, 
     //number of unique alumni donors
-    #define HOURLY_STATISTICS_ROW GTD::output_row_t<donation_val_t, donation_val_t, donation_val_t, size_t, size_t, size_t, size_t>
+    typedef GTD::output_row_t<donation_val_t, donation_val_t, donation_val_t, size_t, size_t, size_t, size_t> hour_statistics_row;
 
     class matcher
     {
@@ -58,7 +58,7 @@ namespace GTD
         const std::unordered_map<std::string, dancer_statistics_row>& get_dancer_statistics() const;
         //Returns statistics broken down by hour 
         //@return fundraising statistics broken down by hour
-        const std::unordered_map<date_time_t, HOURLY_STATISTICS_ROW>& get_hourly_statistics() const;
+        const std::map<date_time_t, hour_statistics_row>& get_hourly_statistics() const;
         //Returns the list of donors
         //@return list of donors
         const std::vector<donor_t>& get_donor_information() const;
@@ -141,7 +141,7 @@ namespace GTD
             std::unordered_map<std::string, dancer_t> _M_matching_info;
             std::vector<donor_t> _M_donors;
             std::vector<donor_t> _M_alumni;
-            std::unordered_map<date_time_t, HOURLY_STATISTICS_ROW> _M_hour_statistics;
+            std::map<date_time_t, hour_statistics_row> _M_hour_statistics;
             std::unordered_map<std::string, dancer_statistics_row> _M_dancer_statistics;
 
 
