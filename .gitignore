@@ -2,6 +2,9 @@
 bin/
 !lib/*/bin
 
+#ignore old include folder 
+src/include/
+
 #Just for now
 build/
 

@@ -1,7 +1,38 @@
 #include "basic_types.h"
 #include <string>
 
-namespace GTD {
+namespace Fundraising
+{
+    std::ostream& operator<<(std::ostream& os, const Analysis::donation_val_t& d)
+    {
+        std::string cents_string;
+        if (d.second < 10) cents_string = "0" + std::to_string(d.second);
+        else cents_string = std::to_string(d.second);
+        os << "$" << std::to_string(d.first) << "." << cents_string;
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const Analysis::donation_t& d)
+    {
+        os << "{";
+        //Output information
+        os << "Timestamp: " << static_cast<std::string>(d._M_timestamp);
+        os << "Amount: " << (d._M_amt) << ", ";
+        os << "Donor Name: " << d._M_donor_first_name << " " << d._M_donor_last_name << ", ";
+        os << "Donor Email: "<< d._M_donor_email << ", ";
+        os << "Donor Relation: " << d._M_donor_relation << ", ";
+        os << "Dancer Name: " << d._M_dancer_name << ", ";
+        os << "Dancer House: " << d._M_dancer_house << ", ";
+        os << "Dancer Team: " << d._M_dancer_team << ", ";
+        os << "Dancer Type: " << d._M_dancer_role << ", ";
+        os << "Dancer ID: " << d._M_dancer_id;
+        os << "}";
+        return os;
+    }
+
+}
+
+namespace Fundraising::Analysis {
 
     date_time_t::date_time_t(const std::string& date, const std::string& time)
     {
@@ -106,15 +137,6 @@ namespace GTD {
             hour_string + ":" + min_string + ":" + sec_string;
     }
 
-    std::ostream& operator<<(std::ostream& os, const donation_val_t& d)
-    {
-        std::string cents_string;
-        if (d.second < 10) cents_string = "0" + std::to_string(d.second);
-        else cents_string = std::to_string(d.second);
-        os << "$" << std::to_string(d.first) << "." << cents_string;
-        return os;
-    }
-
     donation_val_t operator+(const donation_val_t& lhs, const donation_val_t& rhs)
     {
         int dollars = lhs.first + rhs.first;
@@ -188,24 +210,6 @@ namespace GTD {
     donation_val_t make_donation(int dollar, int cents)
     {
         return std::make_pair(dollar, cents);
-    }
-
-    std::ostream& operator<<(std::ostream& os, const donation_t& d)
-    {
-        os << "{";
-        //Output information
-        os << "Timestamp: " << static_cast<std::string>(d._M_timestamp);
-        os << "Amount: " << (d._M_amt) << ", ";
-        os << "Donor Name: " << d._M_donor_first_name << " " << d._M_donor_last_name << ", ";
-        os << "Donor Email: "<< d._M_donor_email << ", ";
-        os << "Donor Relation: " << d._M_donor_relation << ", ";
-        os << "Dancer Name: " << d._M_dancer_name << ", ";
-        os << "Dancer House: " << d._M_dancer_house << ", ";
-        os << "Dancer Team: " << d._M_dancer_team << ", ";
-        os << "Dancer Type: " << d._M_dancer_role << ", ";
-        os << "Dancer ID: " << d._M_dancer_id;
-        os << "}";
-        return os;
     }
 
     donation_t::donation_t(const date_time_t& timestamp,

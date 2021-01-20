@@ -1,8 +1,8 @@
-#include "include/matching.h"
+#include "matching.h"
 #include <numeric>
 #include <algorithm>
 
-namespace GTD
+namespace Fundraising::Analysis
 {
     const matching_criterion_t matcher::NO_MATCHING = {ZERO, ZERO, ZERO, ZERO, ZERO, date_time_t(), date_time_t()};
 

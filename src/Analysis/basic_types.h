@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace GTD {
+namespace Fundraising::Analysis {
 
     template<typename..._Tp>
     using output_row_t = std::tuple<_Tp...>;
@@ -71,8 +71,6 @@ namespace GTD {
 
     donation_val_t make_donation(const std::string& donation);
     donation_val_t make_donation(int dollar, int cents);
-    
-    std::ostream& operator<<(std::ostream& os, const donation_val_t& d);
 
     //A struct to represent a single donation 
     //Includes information about
@@ -144,8 +142,6 @@ namespace GTD {
         //The associated peer id 
         std::string _M_dancer_id;
     }; //! donation_t
-
-    std::ostream& operator<<(std::ostream& os, const donation_t& d);
 
     //Struct to represent information about a donor 
     //Includes information about 
@@ -247,21 +243,27 @@ namespace GTD {
     bool operator<(const dancer_t& lhs, const dancer_t& rhs);
 }
 
+namespace Fundraising 
+{
+    std::ostream& operator<<(std::ostream& os, const Analysis::donation_t& d);
+    std::ostream& operator<<(std::ostream& os, const Analysis::donation_val_t& d);
+}
+
  namespace std
     {
         template<> 
-        struct hash<GTD::dancer_t>
+        struct hash<Fundraising::Analysis::dancer_t>
         {
-            size_t operator()(const GTD::dancer_t& d) const
+            size_t operator()(const Fundraising::Analysis::dancer_t& d) const
             {
                 return std::hash<std::string>{}(d._M_dancer_id);
             }
         };
 
         template<> 
-        struct hash<GTD::date_time_t>
+        struct hash<Fundraising::Analysis::date_time_t>
         {
-            size_t operator()(const GTD::date_time_t& dt) const
+            size_t operator()(const Fundraising::Analysis::date_time_t& dt) const
             {
                 std::string dt_string = static_cast<std::string>(dt);
                 return std::hash<std::string>{}(dt_string);

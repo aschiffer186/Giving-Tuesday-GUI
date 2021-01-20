@@ -1,16 +1,20 @@
-#include "io.h" 
-#include "basic_types.h"
+#include "csv_io.h"
 #include "csvstream.hh"
+#include <map>
 
-namespace GTD {
+
+namespace Fundraising::IO 
+{
     using csvrow_t = std::map<std::string, std::string>;
 
     #define MAP_FIND(map, o) std::find_if(map.begin(), map.end(), [](const std::pair<std::string, std::string>& p){return p.first.find(o) != std::string::npos;})
 
-    void read_csv_donations(std::vector<donation_t>& donations, const char* filename)
+
+    std::vector<Analysis::donation_t> read_csv_donations(const std::string& filename, size_t num_donations)
     {
         try 
         {
+            std::vector<Analysis::donation_t> donations;
             csvstream csvin(filename);
             csvrow_t row; 
             while (csvin >> row) 
@@ -18,7 +22,7 @@ namespace GTD {
                 //std::cout << row << std::endl;
                 auto date = MAP_FIND(row, "Date")->second;
                 auto time = MAP_FIND(row, "Time")->second;
-                date_time_t dt(date, time);
+                Analysis::date_time_t dt(date, time);
 
                 auto donor_first_name = row.find("Donor First Name")->second;
                 auto donor_last_name = row.find("Donor Last Name")->second;
@@ -26,7 +30,7 @@ namespace GTD {
                 auto donor_phone = row.find("Donor Phone")->second;
                 auto donor_card = row.find("Donor Card")->second;
                 auto donor_relation = row.find("Donor Relation")->second;
-                auto donation_amt = make_donation(row.find("Donation Amount")->second);
+                auto donation_amt = Analysis::make_donation(row.find("Donation Amount")->second);
                 auto dancer_name = row.find("Dancer Name")->second;
                 auto dancer_email = row.find("Dancer Email")->second;
                 auto dancer_id = row.find("Dancer Peer ID")->second;
@@ -51,6 +55,7 @@ namespace GTD {
                     dancer_id
                 );
             }
+            return donations;
         } catch (const csvstream_exception& ex)
         {
             std::cout << "Error: " << filename << " not found. Program terminated." << std::endl;
@@ -61,14 +66,4 @@ namespace GTD {
             exit(EXIT_FAILURE);
         }
     }
-
-    std::vector<donation_t> read_donations(const std::string& filename, size_t num_donations)
-    {
-        std::vector<donation_t> donations;
-        donations.reserve(num_donations);
-        if(filename.find(".csv") != std::string::npos)
-            read_csv_donations(donations, filename.c_str());
-        return donations;
-    }
 }
-

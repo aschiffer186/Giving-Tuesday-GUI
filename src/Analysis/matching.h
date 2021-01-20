@@ -9,26 +9,15 @@
 #include <array>
 #include <set>
 #include "basic_types.h"
+#include "matching_base.h"
 
-namespace GTD 
+namespace Fundraising::Analysis 
 {
-
-    struct matching_criterion_t
-    {
-        donation_val_t _M_general_amt;
-        donation_val_t _M_dancer_amt;
-        donation_val_t _M_max_per_donor;
-        donation_val_t _M_max_per_person;
-        donation_val_t _M_max_per_donation;
-        date_time_t _M_start;
-        date_time_t _M_end;
-    };
-
     //Total Donations, Mean Donation, Median Donation,  % of Total Fundraising, Num Participants, % of Total Participants
-    typedef GTD::output_row_t<donation_val_t, donation_val_t, donation_val_t, double, size_t, double> dancer_statistics_row;
+    typedef output_row_t<donation_val_t, donation_val_t, donation_val_t, double, size_t, double> dancer_statistics_row;
     //Hourly fundraising, mean donation size, median donation size, num donors, num unique donors, number of alumni donors, 
     //number of unique alumni donors
-    typedef GTD::output_row_t<donation_val_t, donation_val_t, donation_val_t, size_t, size_t, size_t, size_t> hour_statistics_row;
+    typedef output_row_t<donation_val_t, donation_val_t, donation_val_t, size_t, size_t, size_t, size_t> hour_statistics_row;
 
     class matcher
     {

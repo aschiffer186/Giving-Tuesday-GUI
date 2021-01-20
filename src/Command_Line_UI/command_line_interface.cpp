@@ -1,6 +1,6 @@
 #include "command_line_interface.h"
-#include "matching.h"
-#include "io.h"
+#include "Analysis/matching.h"
+#include "File_IO/csv_io.h"
 #include <getopt.h>
 #include <stdexcept>
 #include <iostream>
@@ -14,7 +14,7 @@ option long_options[] =
     {nullptr, 0, nullptr, 0}
 };
 
-namespace GTD
+namespace Fundraising::Command_Line
 {
     opts process_command_line_args(int argc, char** argv)
     {
@@ -100,28 +100,30 @@ namespace GTD
             exit(EXIT_FAILURE);
         }
         std::string filename = ops._M_input_file;
-        std::vector<donation_t> donations = read_donations(filename);
+        std::vector<Analysis::donation_t> donations = IO::read_csv_donations(filename);
 
         //Eventually, these will be read from a file?
-        matching_criterion_t mc1 = {make_donation(4500*0.6, 0), 
-            make_donation(4500*0.4,0), 
-            make_donation(25, 0), 
-            make_donation(50, 0), 
-            make_donation(25, 0),
-            date_time_t("12/1/2020", "00:00:00"), 
-            date_time_t("12/1/2020", "13:59:59")};
+        Analysis::matching_criterion_t mc1 = {
+            Analysis::make_donation(4500*0.6, 0), 
+            Analysis::make_donation(4500*0.4,0), 
+            Analysis::make_donation(25, 0), 
+            Analysis::make_donation(50, 0), 
+            Analysis::make_donation(25, 0),
+            Analysis::date_time_t("12/1/2020", "00:00:00"), 
+            Analysis::date_time_t("12/1/2020", "13:59:59")};
         
-        matching_criterion_t mc2 = {make_donation(4500*0.6, 0), 
-            make_donation(4500*0.4,0), 
-            make_donation(25, 0), 
-            make_donation(50, 0), 
-            make_donation(25, 0),
-            date_time_t("12/1/2020", "14:00:00"), 
-            date_time_t("12/1/2020", "23:59:59")};
+        Analysis::matching_criterion_t mc2 = {
+            Analysis::make_donation(4500*0.6, 0), 
+            Analysis::make_donation(4500*0.4,0), 
+            Analysis::make_donation(25, 0), 
+            Analysis::make_donation(50, 0), 
+            Analysis::make_donation(25, 0),
+            Analysis::date_time_t("12/1/2020", "14:00:00"), 
+            Analysis::date_time_t("12/1/2020", "23:59:59")};
         
-        std::vector<matching_criterion_t> criteria = {mc2, mc1};
+        std::vector<Analysis::matching_criterion_t> criteria = {mc2, mc1};
         //Create matching class
-        matcher m(std::move(donations), std::move(criteria));
+        Analysis::matcher m(std::move(donations), std::move(criteria));
         //Perform matching calculations
         m.perform_matching_calculations();
         //Get matching information
@@ -140,11 +142,11 @@ namespace GTD
             std::cout << "General matching money unused during round beginning at " << static_cast<std::string>(it2->first) << ": " << it2->second << "\n";
             std::cout << "\n";
         }
-        write_to_csv(output_folder + "/matching.csv", matching_info.begin(), matching_info.end(), matching_header, matching_row_func);
-        write_to_csv(output_folder + "/dancer_statics.csv", dancer_statistics.begin(), dancer_statistics.end(), statistics_header, statistics_row_func);
-        write_to_csv(output_folder + "/donors.csv", donor_info.begin(), donor_info.end(), donor_header, donor_row_func);
-        write_to_csv(output_folder + "/alumni_donors.csv", alumni_info.begin(), alumni_info.end(), alumni_donor_header, alumni_row_func);
-        write_to_csv(output_folder + "/alumni_statistics.csv", alumni_info.begin(), alumni_info.end(), alumni_statistics_header, alumni_statistics_row);
-        write_to_csv(output_folder + "/hourly_statistics.csv", hour_statistics.begin(), hour_statistics.end(), hourly_statistics_header, hour_statistics_row);
+        IO::write_to_csv(output_folder + "/matching.csv", matching_info.begin(), matching_info.end(), matching_header, matching_row_func);
+        IO::write_to_csv(output_folder + "/dancer_statics.csv", dancer_statistics.begin(), dancer_statistics.end(), statistics_header, statistics_row_func);
+        IO::write_to_csv(output_folder + "/donors.csv", donor_info.begin(), donor_info.end(), donor_header, donor_row_func);
+        IO::write_to_csv(output_folder + "/alumni_donors.csv", alumni_info.begin(), alumni_info.end(), alumni_donor_header, alumni_row_func);
+        IO::write_to_csv(output_folder + "/alumni_statistics.csv", alumni_info.begin(), alumni_info.end(), alumni_statistics_header, alumni_statistics_row);
+        IO::write_to_csv(output_folder + "/hourly_statistics.csv", hour_statistics.begin(), hour_statistics.end(), hourly_statistics_header, hour_statistics_func);
     }
 }
