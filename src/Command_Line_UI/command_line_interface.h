@@ -25,9 +25,9 @@ namespace Fundraising::Command_Line
 
     //Handle command line output
     const static std::string matching_header = "Dancer Peer ID,Dancer Name,Dancer Email,Dancer Amount Raised,Dancer Amount Matched,Num Unique Donations";;
-    auto matching_row_func = [](std::ostream& fout, const std::pair<std::string, Fundraising::Analysis::dancer_t>& p)->std::ostream&
+    auto matching_row_func = [](std::ostream& fout, const std::pair<std::string, Analysis::dancer_t>& p)->std::ostream&
                                     {
-                                        Fundraising::Analysis::dancer_t d = p.second;
+                                        Analysis::dancer_t d = p.second;
                                         fout << d._M_dancer_id << "," << d._M_dancer_name << "," << d._M_dancer_email << ",";
                                         fout << d._M_amt_raised << "," << d._M_amt_matched << ",";
                                         fout << d._M_donors.size();
@@ -35,7 +35,7 @@ namespace Fundraising::Command_Line
                                     };
     //Dancer statistics ouput
     const static std::string statistics_header = "Type,Total Fundraised,Mean Fundraising,Median Fundraising,% of Total Fundraising,Number of Participants,% of Total Participants";
-    auto statistics_row_func = [](std::ostream& fout, const std::pair<std::string, Fundraising::Analysis::dancer_statistics_row>& p)->std::ostream&
+    auto statistics_row_func = [](std::ostream& fout, const std::pair<std::string, Analysis::dancer_statistics_row>& p)->std::ostream&
                                     {
                                         fout << p.first << ",";
                                         auto row = p.second;
@@ -45,7 +45,7 @@ namespace Fundraising::Command_Line
                                     };
     //Donor information output
     const static std::string donor_header = "Donor Name,Donor Phone,Donor Email,Amount Donated,Amount Matched";
-    auto donor_row_func = [](std::ostream& fout, const Fundraising::Analysis::donor_t& donor)->std::ostream&
+    auto donor_row_func = [](std::ostream& fout, const Analysis::donor_t& donor)->std::ostream&
                                 {
                                     fout << donor._M_donor_first_name << " " << donor._M_donor_last_name << ",";
                                     fout << donor._M_donor_phone << "," << donor._M_donor_email << ",";
@@ -54,7 +54,7 @@ namespace Fundraising::Command_Line
                                 };
     
     const static std::string alumni_donor_header = "Donor Name,Donor Phone,Donor Email,Amount Donated,Amount Matched,Num Donated To";
-    auto alumni_row_func = [](std::ostream& fout, const Fundraising::Analysis::donor_t& donor)->std::ostream&
+    auto alumni_row_func = [](std::ostream& fout, const Analysis::donor_t& donor)->std::ostream&
                             {
                                 fout << donor._M_donor_first_name << " " << donor._M_donor_last_name << ",";
                                 fout << donor._M_donor_phone << "," << donor._M_donor_email << ",";
@@ -69,7 +69,7 @@ namespace Fundraising::Command_Line
                             };
     
     const static std::string alumni_statistics_header = "DMUM,Dancer,Leadership";
-    auto alumni_statistics_row = [](std::ostream& fout, Fundraising::Analysis::donor_t donor)->std::ostream&
+    auto alumni_statistics_row = [](std::ostream& fout, Analysis::donor_t donor)->std::ostream&
                                 {
                                     fout << std::to_string(donor._M_dancer_ids["DMUM"].size()) << ",";
                                     fout << std::to_string(donor._M_dancer_ids["Dancer"].size()) << ",";

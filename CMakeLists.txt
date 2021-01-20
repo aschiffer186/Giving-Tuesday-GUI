@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17.2)
 
 #Set Project 
-project(Giving-Tuesday)
+project(Giving-Tuesday LANGUAGE C CXX)
 
 #Set required C++ standard
 set(CMAKE_CXX_STANDARD 20)
