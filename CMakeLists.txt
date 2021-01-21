@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17.2)
 
 #Set Project 
-project(Giving-Tuesday LANGUAGE C CXX)
+project(Giving-Tuesday)
 
 #Set required C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -15,6 +15,9 @@ include_directories(src/ lib/include)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(Command_Line ${SOURCES})
+
+set(RELEASE_OPTIONS "-O3")
+target_compile_options(Command_Line PUBLIC "$<$<CONFIG:RELEASE>:${RELEASE_OPTIONS}>")
 
 
 

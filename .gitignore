@@ -5,7 +5,7 @@ bin/
 #ignore old include folder 
 src/include/
 
-#Just for now
+#Ignore build
 build/
 
 #Ignore Visual Studio Code requirements 
@@ -17,3 +17,7 @@ learning/
 #Ignore input and output files
 *.csv
 *.xlsx
+
+#Ignore all .txt files except CMake File
+*.txt
+!CMakeLists.txt

@@ -105,25 +105,10 @@ namespace Fundraising::Analysis
         for (size_t i = 0; i < _M_donations.size(); ++i)
         {
             donation_t donation = _M_donations[i];
-            if (i == 0)
-                curr_hour_donations.first = _M_donations.begin();
-            else 
-            {
-                donation_t prev = _M_donations[i-1];
-                short prev_hour = prev._M_timestamp.get_hour();
-                short curr_hour = donation._M_timestamp.get_hour();
-                if(curr_hour != prev_hour)
-                {
-                    curr_hour_donations.second = _M_donations.begin() + i;
-                    _M_donations_by_hours[curr_hour_donations.first->_M_timestamp] = curr_hour_donations;
-                    curr_hour_donations.first = curr_hour_donations.second;
-                }
-                if (i == _M_donations.size() - 1)
-                {
-                    curr_hour_donations.second = _M_donations.end();
-                    _M_donations_by_hours[curr_hour_donations.first->_M_timestamp] = curr_hour_donations;
-                }
-            }
+            date_time_t hour(donation._M_timestamp);
+            std::get<1>(hour._M_time) = 0;
+            std::get<2>(hour._M_time) = 0;
+            _M_donations_by_hours[hour].push_back(donation);
             //Check to see if need to reset matching pools
             //Not thrilled with this solution but whatever 
             if(!_M_matching_rounds.empty())
@@ -190,7 +175,7 @@ namespace Fundraising::Analysis
                 if (dancer._M_dancer_role == "DMUM")
                     donor._M_dancer_ids["DMUM"].insert(dancer._M_dancer_id);
                 else if (dancer._M_dancer_role == "Dancer")
-                        donor._M_dancer_ids["Dancer"].insert(dancer._M_dancer_id);
+                    donor._M_dancer_ids["Dancer"].insert(dancer._M_dancer_id);
                 else
                     donor._M_dancer_ids["Leadership"].insert(dancer._M_dancer_id);
                 _M_donors.push_back(donor);
@@ -201,11 +186,11 @@ namespace Fundraising::Analysis
                 d._M_donation_amt = d._M_donation_amt + donation._M_amt;
                 d._M_matched_amt = d._M_matched_amt + matched_amt;
                 if (dancer._M_dancer_role == "DMUM")
-                    donor._M_dancer_ids["DMUM"].insert(dancer._M_dancer_id);
+                    d._M_dancer_ids["DMUM"].insert(dancer._M_dancer_id);
                 else if (dancer._M_dancer_role == "Dancer")
-                        donor._M_dancer_ids["Dancer"].insert(dancer._M_dancer_id);
+                    d._M_dancer_ids["Dancer"].insert(dancer._M_dancer_id);
                 else
-                    donor._M_dancer_ids["Leadership"].insert(dancer._M_dancer_id);
+                    d._M_dancer_ids["Leadership"].insert(dancer._M_dancer_id);
             }
             //Update alumni info
             if(donor._M_donor_relation.find("DMUM Alumni") != std::string::npos)
@@ -213,12 +198,23 @@ namespace Fundraising::Analysis
                 auto alumnus_it = std::find(_M_alumni.begin(), _M_alumni.end(), donor);
                 if (alumnus_it == _M_alumni.end())
                 {
-                    
+                     if (dancer._M_dancer_role == "DMUM")
+                        donor._M_dancer_ids["DMUM"].insert(dancer._M_dancer_id);
+                    else if (dancer._M_dancer_role == "Dancer")
+                        donor._M_dancer_ids["Dancer"].insert(dancer._M_dancer_id);
+                    else
+                        donor._M_dancer_ids["Leadership"].insert(dancer._M_dancer_id);
                     _M_alumni.push_back(donor);
                 } 
                 else 
                 {
                     donor_t& d = *alumnus_it;
+                     if (dancer._M_dancer_role == "DMUM")
+                        d._M_dancer_ids["DMUM"].insert(dancer._M_dancer_id);
+                    else if (dancer._M_dancer_role == "Dancer")
+                        d._M_dancer_ids["Dancer"].insert(dancer._M_dancer_id);
+                    else
+                        d._M_dancer_ids["Leadership"].insert(dancer._M_dancer_id);
                     d._M_donation_amt = d._M_donation_amt + donation._M_amt;
                     d._M_matched_amt = d._M_matched_amt + matched_amt;
                 }
@@ -441,24 +437,22 @@ namespace Fundraising::Analysis
     {
         for(const auto& hour: _M_donations_by_hours)
         {
-            auto donations_start = hour.second.first;
-            auto donation_end = hour.second.second;
             donation_val_t total_raised;
             size_t num_donations = 0;
             size_t num_alumni_donations = 0;
             std::unordered_set<std::string> unique_donors;
             std::unordered_set<std::string> unique_alumni_donors;
             std::vector<donation_val_t> donation_list;
-            for(; donations_start != donation_end; ++donations_start)
+            for(const auto& donation: hour.second)
             {
-                total_raised = total_raised + donations_start->_M_amt;
-                donation_list.push_back(donations_start->_M_amt);
+                total_raised = total_raised + donation._M_amt;
+                donation_list.push_back(donation._M_amt);
                 ++num_donations;
-                unique_donors.insert(donations_start->_M_donor_phone);
-                if (donations_start->_M_donor_relation.find("DMUM Alumni") != std::string::npos) 
+                unique_donors.insert(donation._M_donor_phone);
+                if (donation._M_donor_relation.find("DMUM Alumni") != std::string::npos) 
                 {
                     ++num_alumni_donations;
-                    unique_alumni_donors.insert(donations_start->_M_donor_phone);
+                    unique_alumni_donors.insert(donation._M_donor_phone);
                 }
             }
             std::sort(donation_list.begin(), donation_list.end());

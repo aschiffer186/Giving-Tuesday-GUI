@@ -122,7 +122,7 @@ namespace Fundraising::Analysis
             donation_val_t _M_curr_dancer_matching_amt;
             //Statistic keeping information 
             donation_val_t _M_total_raised;
-            std::unordered_map<date_time_t, std::pair<decltype(_M_donations.begin()), decltype(_M_donations.begin())>> _M_donations_by_hours;
+            std::unordered_map<date_time_t, std::vector<donation_t>> _M_donations_by_hours;
             std::unordered_map<std::string, std::set<dancer_t>> _M_dancers_by_type;
             std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_general;
             std::vector<std::pair<date_time_t, donation_val_t>> _M_unused_dancer;
