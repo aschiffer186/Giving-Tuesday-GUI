@@ -1,9 +1,11 @@
 #ifndef MATCHING_BASE_H
 #define MATCHING_BASE_H 1
 
+#include "basic_types.h"
+
 namespace Fundraising::Analysis
 {
-     struct matching_criterion_t
+    struct matching_criterion_t
     {
         donation_val_t _M_general_amt;
         donation_val_t _M_dancer_amt;

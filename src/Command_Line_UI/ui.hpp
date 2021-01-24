@@ -3,6 +3,8 @@
 
 #ifndef FUNDRIAISNG_USE_UI
     #include "command_line_interface.h"
+#else
+    #include "command_line_ui.h"
 #endif
 
 #endif

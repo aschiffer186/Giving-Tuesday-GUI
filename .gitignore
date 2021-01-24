@@ -21,3 +21,6 @@ learning/
 #Ignore all .txt files except CMake File
 *.txt
 !CMakeLists.txt
+
+#ignore test files 
+test/

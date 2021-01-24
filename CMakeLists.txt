@@ -19,5 +19,8 @@ add_executable(Command_Line ${SOURCES})
 set(RELEASE_OPTIONS "-O3")
 target_compile_options(Command_Line PUBLIC "$<$<CONFIG:RELEASE>:${RELEASE_OPTIONS}>")
 
+#Make parser tester (temporary)
+add_executable(Test_Parser test/test_parser.cpp src/Analysis/criterion_parser.cpp src/Analysis/basic_types.cpp)
+
 
 
