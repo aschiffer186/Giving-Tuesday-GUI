@@ -1,4 +1,5 @@
 #include "command_line_interface.h"
+#include "Analysis/criterion_parser.h"
 #include "Analysis/matching.h"
 #include "File_IO/csv_io.h"
 #include <getopt.h>
@@ -10,6 +11,7 @@ option long_options[] =
     {"input", required_argument, nullptr, 'i'},
     {"output", required_argument, nullptr, 'o'},
     {"num_donations", required_argument, nullptr, 'n'}, 
+    {"criteria", required_argument, nullptr, 'c'},
     {"help", no_argument, nullptr, 'h'},
     {nullptr, 0, nullptr, 0}
 };
@@ -22,10 +24,11 @@ namespace Fundraising::Command_Line
         bool input_seen = false;
         bool output_seen = false;
         bool num_donations_seen = false;
+        bool criteia_file_seen = false;
 
         int choice = 0;
         long long num_d;
-        while ((choice = getopt_long(argc, argv, "i:o:n:h", long_options, nullptr)) != -1) 
+        while ((choice = getopt_long(argc, argv, "i:o:n:c:h", long_options, nullptr)) != -1) 
         {
             switch(choice)
             {
@@ -50,19 +53,27 @@ namespace Fundraising::Command_Line
                         throw std::invalid_argument("Number of donations must be non-negative");
                     ops._M_num_donations = static_cast<size_t>(num_d);
                     break;
+                case 'c':
+                    if(criteia_file_seen)
+                        throw std::invalid_argument("May only specify criteria file once");
+                    criteia_file_seen = true;
+                    ops._M_criterion_input_file = optarg;
+                    break;
                 case 'h': 
                     std::cout << 
-                    " --input [file name] or -i [filename] \n"
+                    " --input [filename] or -i [filename] \n"
                     "   Specify the input file name. May be a .csv or .xlsx file\n"
                     "--output [folder name] or -o [folder name] \n"
                     "   (Optional) Specify the output directory name\n"
                     "--num-donations [amount] or -n [amount]\n"
-                    "   (Optional) Specify the number of donations. Optional but doing so may speed up the proprgram."
+                    "   (Optional) Specify the number of donations. Optional but doing so may speed up the proprgram.\n"
+                    "--criteria [filenname] or -c [filename]\n"
+                    "   (Optional) Specify a filename with matching criteria"
                     ;
                     std::exit(EXIT_SUCCESS);
                     break;
                 default: 
-                    std::cout << "Invalid argument\n";
+                    std::cerr << "Invalid argument\n";
                     std::cout << 
                     " --input [file name] or -i [filename] \n"
                     "   Specify the input file name. May be a .csv or .xlsx file\n"
@@ -70,6 +81,8 @@ namespace Fundraising::Command_Line
                     "   (Optional) Specify the output directory name\n"
                     "--num-donations [amount] or -n [amount]\n"
                     "   (Optional) Specify the number of donations. Optional but doing so may speed up the program."
+                    "--criteria [filenname] or -c [filename]\n"
+                    "   (Optional) Specify a filename with matching criteria"
                     ;
                     std::exit(EXIT_SUCCESS);
                     break;
@@ -81,6 +94,8 @@ namespace Fundraising::Command_Line
             ops._M_output_folder = "output";
         if(!num_donations_seen)
             ops._M_num_donations = 0;
+        if(!criteia_file_seen)
+            ops._M_criterion_input_file = "";
         return ops;
     }
 
@@ -92,17 +107,18 @@ namespace Fundraising::Command_Line
             ops = process_command_line_args(argc, argv);
         } catch (const std::invalid_argument& ex)
         {
-            std::cout << ex.what() << std::endl;
+            std::cerr << ex.what() << std::endl;
             exit(EXIT_FAILURE);
         } catch (...)
         {
-            std::cout << "Unhandled Exception" << std::endl;
+            std::cerr << "Unhandled Exception" << std::endl;
             exit(EXIT_FAILURE);
         }
         std::string filename = ops._M_input_file;
         std::vector<Analysis::donation_t> donations = IO::read_csv_donations(filename);
 
         //Eventually, these will be read from a file?
+        /*
         Analysis::matching_criterion_t mc1 = {
             Analysis::make_donation(4500*0.6, 0), 
             Analysis::make_donation(4500*0.4,0), 
@@ -120,8 +136,25 @@ namespace Fundraising::Command_Line
             Analysis::make_donation(25, 0),
             Analysis::date_time_t("12/1/2020", "14:00:00"), 
             Analysis::date_time_t("12/1/2020", "23:59:59")};
+        */
         
-        std::vector<Analysis::matching_criterion_t> criteria = {mc2, mc1};
+        std::vector<Analysis::matching_criterion_t> criteria;
+        if (!ops._M_criterion_input_file.empty()) 
+        {
+            std::ifstream criteria_in(ops._M_criterion_input_file.c_str());
+            if(!criteria_in.is_open())
+            {
+                std::cerr << "Error opening file" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+            Analysis::parser p(criteria_in);
+            try {
+            criteria = p.parse_criteria();
+            } catch (const std::runtime_error& ex) {
+                std::cerr << ex.what() << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
         //Create matching class
         Analysis::matcher m(std::move(donations), std::move(criteria));
         //Perform matching calculations
@@ -142,11 +175,11 @@ namespace Fundraising::Command_Line
             std::cout << "General matching money unused during round beginning at " << static_cast<std::string>(it2->first) << ": " << it2->second << "\n";
             std::cout << "\n";
         }
-        IO::write_to_csv(output_folder + "/matching.csv", matching_info.begin(), matching_info.end(), matching_header, matching_row_func);
-        IO::write_to_csv(output_folder + "/dancer_statics.csv", dancer_statistics.begin(), dancer_statistics.end(), statistics_header, statistics_row_func);
-        IO::write_to_csv(output_folder + "/donors.csv", donor_info.begin(), donor_info.end(), donor_header, donor_row_func);
-        IO::write_to_csv(output_folder + "/alumni_donors.csv", alumni_info.begin(), alumni_info.end(), alumni_donor_header, alumni_row_func);
-        IO::write_to_csv(output_folder + "/alumni_statistics.csv", alumni_info.begin(), alumni_info.end(), alumni_statistics_header, alumni_statistics_row);
-        IO::write_to_csv(output_folder + "/hourly_statistics.csv", hour_statistics.begin(), hour_statistics.end(), hourly_statistics_header, hour_statistics_func);
+        IO::write_to_csv(output_folder + "/matching.csv", matching_info.begin(), matching_info.end(), IO::matching_header, IO::matching_row_func);
+        IO::write_to_csv(output_folder + "/dancer_statics.csv", dancer_statistics.begin(), dancer_statistics.end(), IO::statistics_header, IO::statistics_row_func);
+        IO::write_to_csv(output_folder + "/donors.csv", donor_info.begin(), donor_info.end(), IO::donor_header, IO::donor_row_func);
+        IO::write_to_csv(output_folder + "/alumni_donors.csv", alumni_info.begin(), alumni_info.end(), IO::alumni_donor_header, IO::alumni_row_func);
+        IO::write_to_csv(output_folder + "/alumni_statistics.csv", alumni_info.begin(), alumni_info.end(), IO::alumni_statistics_header, IO::alumni_statistics_row);
+        IO::write_to_csv(output_folder + "/hourly_statistics.csv", hour_statistics.begin(), hour_statistics.end(), IO::hourly_statistics_header, IO::hour_statistics_func);
     }
 }

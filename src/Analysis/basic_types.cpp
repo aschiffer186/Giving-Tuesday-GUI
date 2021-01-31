@@ -49,12 +49,12 @@ namespace Fundraising::Analysis {
 
         _M_time = donation_time;
         _M_date = donation_date;
-    }
+    } //! date_time_t()
 
     short date_time_t::get_hour() const 
     {
         return std::get<0>(_M_time);
-    }
+    } //! get_hour()
 
     bool operator<(const date_time_t& lhs, const date_time_t& rhs)
     {
@@ -76,7 +76,7 @@ namespace Fundraising::Analysis {
         if (std::get<1>(lhs_time) < std::get<1>(rhs_time))
             return true;
         return std::get<2>(lhs_time) < std::get<2>(rhs_time);
-    }
+    }//! operator<
 
     bool operator>(const date_time_t& lhs, const date_time_t& rhs)
     {
@@ -98,22 +98,22 @@ namespace Fundraising::Analysis {
         if (std::get<1>(lhs_time) > std::get<1>(rhs_time))
             return true;
         return std::get<2>(lhs_time) > std::get<2>(rhs_time);
-    }
+    }//! operator>
 
     bool operator>=(const date_time_t& lhs, const date_time_t& rhs)
     {
         return !(lhs < rhs);
-    }
+    }//! operator>=
 
     bool operator<=(const date_time_t& lhs, const date_time_t& rhs)
     {
         return !(lhs > rhs);
-    }
+    }//! operator<=
 
     bool operator==(const date_time_t& lhs, const date_time_t& rhs)
     {
         return (lhs >= rhs) && (lhs <= rhs);
-    }
+    }//! operator==
 
     date_time_t::operator std::string() const 
     {
@@ -135,7 +135,7 @@ namespace Fundraising::Analysis {
         //Output information
         return year_string + "/" + month_string + "/" + day_string + " " + 
             hour_string + ":" + min_string + ":" + sec_string;
-    }
+    }//! operator std::string
 
     donation_val_t operator+(const donation_val_t& lhs, const donation_val_t& rhs)
     {
@@ -147,7 +147,7 @@ namespace Fundraising::Analysis {
             dollars += 1;
         }
         return std::make_pair(dollars, cents);
-    }
+    }//! operator+
 
     donation_val_t operator-(const donation_val_t& lhs, const donation_val_t& rhs)
     {
@@ -159,7 +159,7 @@ namespace Fundraising::Analysis {
             dollars -= 1;
         }
         return std::make_pair(dollars, cents);
-    }
+    }//! operator-
 
     bool operator<(const donation_val_t& lhs, const donation_val_t& rhs)
     {
@@ -168,7 +168,7 @@ namespace Fundraising::Analysis {
         if (lhs.first == rhs.first)
             return lhs.second < rhs.second;
         return false;
-    }
+    }//! operator<
 
     bool operator>(const donation_val_t& lhs, const donation_val_t& rhs)
     {
@@ -177,22 +177,22 @@ namespace Fundraising::Analysis {
         if (lhs.first == rhs.first)
             return lhs.second > rhs.second;
         return false;
-    }
+    }//! operator>
 
     bool operator<=(const donation_val_t& lhs, const donation_val_t& rhs)
     {
         return !(lhs > rhs);
-    }
+    }//! operator<=
 
     bool operator>=(const donation_val_t& lhs, const donation_val_t& rhs)
     {
         return !(lhs < rhs);
-    }
+    }//! operator>=
 
     bool operator==(const donation_val_t& lhs, const donation_val_t& rhs)
     {
         return (lhs <= rhs) && (lhs >= rhs);
-    }
+    }//! operator==
 
     donation_val_t make_donation(const std::string& value)
     {
@@ -205,12 +205,12 @@ namespace Fundraising::Analysis {
             if (decimal_index == value.size() - 2) cents *= 10;
         }
         return std::make_pair(dollar_val, cents);
-    }
+    }//! make_donation()
 
     donation_val_t make_donation(int dollar, int cents)
     {
         return std::make_pair(dollar, cents);
-    }
+    }//! make_donation()
 
     donation_t::donation_t(const date_time_t& timestamp,
                 const donation_val_t& amt, 
@@ -265,6 +265,8 @@ namespace Fundraising::Analysis {
 
     bool operator==(const donor_t& lhs, const donor_t& rhs)
     {
+        if(lhs._M_donor_first_name != rhs._M_donor_first_name)
+            return false;
         if (lhs._M_donor_phone == rhs._M_donor_phone) 
             return true;
         if (lhs._M_donor_email == rhs._M_donor_email) 
@@ -272,12 +274,12 @@ namespace Fundraising::Analysis {
         if (lhs._M_donor_card == rhs._M_donor_card) 
             return lhs._M_donor_last_name == rhs._M_donor_last_name;
         return false;
-    }
+    }//! operator==
 
     bool operator!=(const donor_t& lhs, const donor_t& rhs)
     {
         return !(lhs==rhs);
-    }
+    }//! operator!=
 
     dancer_t::dancer_t(const std::string& dancer_id,
             const std::string& name,
@@ -302,5 +304,5 @@ namespace Fundraising::Analysis {
     bool operator<(const dancer_t& lhs, const dancer_t& rhs)
     {
         return lhs._M_dancer_id < rhs._M_dancer_id;
-    }
-}
+    }//! operator<
+}//! namespace Fundraising::Analysis

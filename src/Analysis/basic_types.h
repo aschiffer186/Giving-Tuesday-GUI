@@ -186,7 +186,7 @@ namespace Fundraising::Analysis {
         donation_val_t _M_donation_amt;
         //The total amount the donor was matched
         donation_val_t _M_matched_amt;
-         //List of dancers donated_to
+        //List of dancers donated_to
         //Key: Dancer role 
         //Value: list of dancers with that role 
         std::unordered_map<std::string, std::unordered_set<std::string>> _M_dancer_ids;
@@ -238,16 +238,16 @@ namespace Fundraising::Analysis {
         donation_val_t _M_amt_matched;
         //List of donors
         std::vector<std::pair<donor_t, donation_val_t>> _M_donors;
-    };
+    }; //! dancer_t
 
     bool operator<(const dancer_t& lhs, const dancer_t& rhs);
-}
+} //! namespace Fundraising::Analysis
 
 namespace Fundraising 
 {
     std::ostream& operator<<(std::ostream& os, const Analysis::donation_t& d);
     std::ostream& operator<<(std::ostream& os, const Analysis::donation_val_t& d);
-}
+}//! namesoace Fundraising
 
  namespace std
     {
@@ -269,7 +269,7 @@ namespace Fundraising
                 return std::hash<std::string>{}(dt_string);
             }
         };
-    }
+    } //! namespace std
 
 
 #endif

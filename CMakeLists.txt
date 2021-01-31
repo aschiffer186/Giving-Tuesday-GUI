@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.17.2)
 
 #Set Project 
-project(Giving-Tuesday)
+project(Fundraising-Analysis)
 
 #Set required C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_)
 
 #Set sources 
 file(GLOB SOURCES src/*.cpp src/Analysis/*.cpp src/Command_Line_UI/*.cpp src/File_IO/*.cpp lib/getopt.c)
@@ -14,13 +13,17 @@ include_directories(src/ lib/include)
 #Set binary directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+#Add executable to run on command line
 add_executable(Command_Line ${SOURCES})
+
+#Add executable for UI
+add_executable(Fundraising_Analysis ${SOURCES})
+#Add macro to use UI
+target_compile_definitions(Fundraising_Analysis PUBLIC FUNDRAISING_USE_UI)
 
 set(RELEASE_OPTIONS "-O3")
 target_compile_options(Command_Line PUBLIC "$<$<CONFIG:RELEASE>:${RELEASE_OPTIONS}>")
-
-#Make parser tester (temporary)
-add_executable(Test_Parser test/test_parser.cpp src/Analysis/criterion_parser.cpp src/Analysis/basic_types.cpp)
+target_compile_options(Fundraising_Analysis PUBLIC "$<$<CONFIG:RELEASE>:${RELEASE_OPTIONS}>")
 
 
 
