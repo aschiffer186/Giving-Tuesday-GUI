@@ -45,6 +45,7 @@ namespace Fundraising::Analysis {
         short month = static_cast<short>(std::stoi(date.substr(0, 2)));
         short day = static_cast<short>(std::stoi(date.substr(3, 5)));
         int year = std::stoi(date.substr(7));
+        if (year < 1e3) year += 2000;
         auto donation_date = std::make_tuple(year, month, day);
 
         _M_time = donation_time;
@@ -265,8 +266,6 @@ namespace Fundraising::Analysis {
 
     bool operator==(const donor_t& lhs, const donor_t& rhs)
     {
-        if(lhs._M_donor_first_name != rhs._M_donor_first_name)
-            return false;
         if (lhs._M_donor_phone == rhs._M_donor_phone) 
             return true;
         if (lhs._M_donor_email == rhs._M_donor_email) 

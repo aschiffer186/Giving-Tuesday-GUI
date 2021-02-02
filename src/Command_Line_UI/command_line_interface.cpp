@@ -155,8 +155,13 @@ namespace Fundraising::Command_Line
                 exit(EXIT_FAILURE);
             }
         }
+        std::sort(criteria.begin(), criteria.end(), [](const Analysis::matching_criterion_t& lhs, const Analysis::matching_criterion_t& rhs){return lhs._M_start > rhs._M_start;});
+        for(const auto& c: criteria)
+        {
+            std::cout << static_cast<std::string>(c._M_start) << std::endl;
+        }
         //Create matching class
-        Analysis::matcher m(std::move(donations), std::move(criteria));
+        Analysis::matcher m(donations, criteria);
         //Perform matching calculations
         m.perform_matching_calculations();
         //Get matching information

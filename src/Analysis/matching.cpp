@@ -51,6 +51,7 @@ namespace Fundraising::Analysis
             zero_matching_pools();
         } else {
             auto timestamp = _M_donations.front()._M_timestamp;
+            auto start = _M_matching_rounds.back()._M_start;
             if (timestamp < _M_matching_rounds.back()._M_start)
             {
                zero_matching_pools();
@@ -100,7 +101,7 @@ namespace Fundraising::Analysis
 
     void matcher::perform_matching_calculations()
     {
-        //Iterator through all donations
+        //Iterate through all donations
         std::pair<decltype(_M_donations.begin()), decltype(_M_donations.end())> curr_hour_donations;
         for (size_t i = 0; i < _M_donations.size(); ++i)
         {
@@ -309,15 +310,23 @@ namespace Fundraising::Analysis
             _M_unused_general.emplace_back(_M_curr_criterion._M_start, _M_curr_general_matching_amt);
             _M_unused_dancer.emplace_back(_M_curr_criterion._M_start, _M_curr_dancer_matching_amt);
         }
-        _M_matching_rounds.pop_back();
         if(!_M_matching_rounds.empty())
         {
             //Check if matching criterion immediately following current one 
+            if (dt > _M_matching_rounds.back()._M_end)
+            {
+                _M_matching_rounds.pop_back();
+                if (_M_matching_rounds.empty())
+                {
+                    zero_matching_pools();
+                    return;
+                }
+            }
             if (dt >= _M_matching_rounds.back()._M_start)
             {
                 _M_curr_criterion = _M_matching_rounds.back();
-                _M_curr_general_matching_amt = _M_unused_general.back().second + _M_curr_criterion._M_general_amt;
-                _M_curr_dancer_matching_amt = _M_unused_dancer.back().second + _M_curr_criterion._M_dancer_amt;
+                _M_curr_general_matching_amt = (_M_unused_general.empty()) ?  _M_curr_criterion._M_general_amt : _M_unused_general.back().second + _M_curr_criterion._M_general_amt;
+                _M_curr_dancer_matching_amt = (_M_unused_dancer.empty()) ? _M_curr_criterion._M_dancer_amt : _M_unused_dancer.back().second + _M_curr_criterion._M_dancer_amt;
             } 
             else //We're in between matching criteria 
             {
@@ -373,6 +382,8 @@ namespace Fundraising::Analysis
         {
            update_statistics_table(dancer, d, "Leadership");
         }
+        //Update dancer team
+        update_statistics_table(dancer, d, dancer._M_dancer_team);
     }
 
     void matcher::update_statistics_table(const dancer_t& dancer, const donation_val_t&d, const std::string& role)
