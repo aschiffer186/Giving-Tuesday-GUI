@@ -104,7 +104,6 @@ namespace Fundraising::Analysis {
                 const std::string& donor_last_name,
                 const std::string& donor_email,
                 const std::string& donor_phone,
-                const std::string& donor_card,
                 const std::string& donor_relation,
                 const std::string& dancer_name,
                 const std::string& dancer_email,
@@ -125,8 +124,6 @@ namespace Fundraising::Analysis {
         std::string _M_donor_email;
         //The donor's phone
         std::string _M_donor_phone;
-        //The last 4 digits of the donor's card
-        std::string _M_donor_card;
         //The donor's relation 
         std::string _M_donor_relation;
         //The dancer's name
@@ -167,7 +164,6 @@ namespace Fundraising::Analysis {
             const std::string& last_name,
             const std::string& email,
             const std::string& phone, 
-            const std::string& card,
             const std::string& relation);
         
         //The donor's name
@@ -178,8 +174,6 @@ namespace Fundraising::Analysis {
         std::string _M_donor_email;
         //The donor's phone 
         std::string _M_donor_phone;
-        //The last 4 digits of the donor's card
-        std::string _M_donor_card;
         //The donor's relation 
         std::string _M_donor_relation;
         //The dotal amount the donor donated

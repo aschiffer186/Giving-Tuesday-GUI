@@ -28,7 +28,6 @@ namespace Fundraising::IO
                 auto donor_last_name = row.find("Donor Last Name")->second;
                 auto donor_email = row.find("Donor Email")->second;
                 auto donor_phone = row.find("Donor Phone")->second;
-                auto donor_card = row.find("Donor Card")->second;
                 auto donor_relation = row.find("Donor Relation")->second;
                 auto donation_amt = Analysis::make_donation(row.find("Donation Amount")->second);
                 auto dancer_name = row.find("Dancer Name")->second;
@@ -45,7 +44,6 @@ namespace Fundraising::IO
                     donor_last_name,
                     donor_email,
                     donor_phone,
-                    donor_card,
                     donor_relation,
                     dancer_name,
                     dancer_email,

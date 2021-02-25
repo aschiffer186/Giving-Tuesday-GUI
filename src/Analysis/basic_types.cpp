@@ -219,7 +219,6 @@ namespace Fundraising::Analysis {
                 const std::string& donor_last_name,
                 const std::string& donor_email,
                 const std::string& donor_phone,
-                const std::string& donor_card,
                 const std::string& donor_relation,
                 const std::string& dancer_name,
                 const std::string& dancer_email,
@@ -233,7 +232,6 @@ namespace Fundraising::Analysis {
                 _M_donor_last_name(donor_last_name),
                 _M_donor_email(donor_email),
                 _M_donor_phone(donor_phone),
-                _M_donor_card(donor_card),
                 _M_donor_relation(donor_relation),
                 _M_dancer_name(dancer_name),
                 _M_dancer_email(dancer_email),
@@ -249,13 +247,11 @@ namespace Fundraising::Analysis {
             const std::string& last_name,
             const std::string& email,
             const std::string& phone, 
-            const std::string& card,
             const std::string& relation) :
             _M_donor_first_name(first_name),
             _M_donor_last_name(last_name),
             _M_donor_email(email),
             _M_donor_phone(phone),
-            _M_donor_card(card),
             _M_donor_relation(relation),
             _M_donation_amt(ZERO),
             _M_matched_amt(ZERO),
@@ -270,8 +266,6 @@ namespace Fundraising::Analysis {
             return true;
         if (lhs._M_donor_email == rhs._M_donor_email) 
             return true;
-        if (lhs._M_donor_card == rhs._M_donor_card) 
-            return lhs._M_donor_last_name == rhs._M_donor_last_name;
         return false;
     }//! operator==
 

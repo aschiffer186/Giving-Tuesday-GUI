@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 option long_options[] = 
 {
